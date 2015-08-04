@@ -1,0 +1,393 @@
+.TH "xpad.cpp" 3 "Fri Jul 17 2015" "Version 4" "XPad detectors driver for AreaDetector (EPICS)" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+xpad.cpp \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stddef\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <stdarg\&.h>\fP
+.br
+\fC#include <stdint\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <errno\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+\fC#include <ctype\&.h>\fP
+.br
+\fC#include <fcntl\&.h>\fP
+.br
+\fC#include <sys/stat\&.h>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include <epicsTime\&.h>\fP
+.br
+\fC#include <epicsThread\&.h>\fP
+.br
+\fC#include <epicsEvent\&.h>\fP
+.br
+\fC#include <epicsTimer\&.h>\fP
+.br
+\fC#include <epicsMutex\&.h>\fP
+.br
+\fC#include <epicsString\&.h>\fP
+.br
+\fC#include <epicsStdio\&.h>\fP
+.br
+\fC#include <cantProceed\&.h>\fP
+.br
+\fC#include <iocsh\&.h>\fP
+.br
+\fC#include <epicsExport\&.h>\fP
+.br
+\fC#include <asynUInt32Digital\&.h>\fP
+.br
+\fC#include <asynUInt32DigitalSyncIO\&.h>\fP
+.br
+\fC#include <asynOctetSyncIO\&.h>\fP
+.br
+\fC#include 'ADDriver\&.h'\fP
+.br
+\fC#include 'xpadx_pck\&.h'\fP
+.br
+
+.SS "Classes"
+
+.in +1c
+.ti -1c
+.RI "class \fBxpad\fP"
+.br
+.in -1c
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBMAX_MESSAGE_SIZE\fP   256"
+.br
+.ti -1c
+.RI "#define \fBMAX_FILENAME_LEN\fP   256"
+.br
+.ti -1c
+.RI "#define \fBXPAD_SOCKET_TIMEOUT\fP   1\&.0"
+.br
+.ti -1c
+.RI "#define \fBXPAD_COMMAND_TIMEOUT\fP   180\&.0"
+.br
+.ti -1c
+.RI "#define \fBXPAD_POLL_DELAY\fP   \&.01"
+.br
+.ti -1c
+.RI "#define \fBMAX_RETURN_SIZE\fP   1000;"
+.br
+.ti -1c
+.RI "#define \fBxpadChangeModeString\fP   'XPAD_CHANGE_MODE'"
+.br
+.ti -1c
+.RI "#define \fBxpadAbortString\fP   'XPAD_ABORT'"
+.br
+.ti -1c
+.RI "#define \fBxpad_acq_modeString\fP   'XPAD_ACQUISITION_MODE'"
+.br
+.ti -1c
+.RI "#define \fBxpad_stacksizeString\fP   'XPAD_STACKSIZE'"
+.br
+.ti -1c
+.RI "#define \fBxpad_geo_correctionString\fP   'XPAD_GEOMETRICAL_CORRECTION_FLAG'"
+.br
+.ti -1c
+.RI "#define \fBxpad_flat_fieldString\fP   'XPAD_FLAT_FIELD_CORRECTION_FLAG'"
+.br
+.ti -1c
+.RI "#define \fBxpad_img_transferString\fP   'XPAD_IMAGE_TRANSFER_FLAG'"
+.br
+.ti -1c
+.RI "#define \fBxpad_inputString\fP   'XPAD_INPUT_SIGNAL'"
+.br
+.ti -1c
+.RI "#define \fBxpad_outputString\fP   'XPAD_OUTPUT_SIGNAL'"
+.br
+.ti -1c
+.RI "#define \fBxpad_overflowString\fP   'XPAD_OVERFLOW_TIME'"
+.br
+.ti -1c
+.RI "#define \fBxpad_outformatString\fP   'XPAD_OUTPUT_FORMAT'"
+.br
+.ti -1c
+.RI "#define \fBxpad_outpathString\fP   'XPAD_OUTPUT_SERVER_FILEPATH'"
+.br
+.ti -1c
+.RI "#define \fBFIRST_XPAD_PARAM\fP   xpad_acq_mode"
+.br
+.ti -1c
+.RI "#define \fBLAST_XPAD_PARAM\fP   xpadAbort"
+.br
+.ti -1c
+.RI "#define \fBNUM_XPAD_PARAMS\fP   ((int)(&\fBLAST_XPAD_PARAM\fP - &\fBFIRST_XPAD_PARAM\fP + 1))"
+.br
+.in -1c
+.SS "Enumerations"
+
+.in +1c
+.ti -1c
+.RI "enum \fBxpad_mode\fP { \fBxmode_aquire\fP, \fBxmode_calib\fP, \fBxmode_config\fP, \fBxmode_loadingcalib\fP, \fBdigitaltest\fP, \fBxmode_idle\fP, \fBxmode_changin\fP }"
+.br
+.RI "\fIAquisition mode choices\&. \fP"
+.ti -1c
+.RI "enum \fBxpad_acquisition_mode\fP { \fBAM_standard\fP, \fBAM_detector_burst\fP, \fBAM_comupter_burst\fP, \fBAM_stacking_16b\fP, \fBAM_stacking_32b\fP, \fBAM_single_bunch_16b\fP, \fBAM_single_bunch_32b\fP }"
+.br
+.ti -1c
+.RI "enum \fBxpad_input_signal\fP { \fBIS_internal\fP =  ADTriggerInternal, \fBIS_external\fP =  ADTriggerExternal, \fBIS_internal_trigger1\fP, \fBIS_internal_trigger2\fP }"
+.br
+.RI "\fIbrief Trigger mode choices \fP"
+.ti -1c
+.RI "enum \fBxpad_output_signal\fP { \fBOS_exposure_busy\fP, \fBOS_shutter_busy\fP, \fBOS_busy_update_overflow\fP, \fBOS_pixel_counter_on\fP, \fBOS_external_gate\fP, \fBOS_exposure_read_done\fP, \fBOS_data_transfer\fP, \fBOS_RAMready_imgbusy\fP, \fBOS_to_localDDR\fP, \fBOS_localDDR_to_PC\fP }"
+.br
+.RI "\fItype of server returns \fP"
+.ti -1c
+.RI "enum \fBxpadStatus_t\fP { \fBxpadStatusIdle\fP, \fBxpadStatusExpose\fP, \fBxpadStatusScan\fP, \fBxpadStatusErase\fP, \fBxpadStatusChangeMode\fP, \fBxpadStatusAborting\fP, \fBxpadStatusError\fP, \fBxpadStatusWaiting\fP }"
+.br
+.RI "\fIStatus choices\&. \fP"
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static void \fBtimerCallbackC\fP (void *drvPvt)"
+.br
+.RI "\fI* This function is called when the exposure time timer expires */ \fP"
+.ti -1c
+.RI "static void \fBxpadTaskC\fP (void *drvPvt)"
+.br
+.RI "\fITask launcher\&. \fP"
+.ti -1c
+.RI "int \fBxpadConfig\fP (const char *portName, const char *serverPort, int maxBuffers, size_t maxMemory, int priority, int stackSize)"
+.br
+.RI "\fICreate an instence of the driver\&. \fP"
+.ti -1c
+.RI "static void \fBconfigXPADCallFunc\fP (const iocshArgBuf *args)"
+.br
+.ti -1c
+.RI "static void \fBxpadRegister\fP (void)"
+.br
+.ti -1c
+.RI "\fBepicsExportRegistrar\fP (\fBxpadRegister\fP)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "static const char * \fBdriverName\fP = 'xpad'"
+.br
+.ti -1c
+.RI "static const iocshArg \fBxpadConfigArg0\fP = {'Port name', iocshArgString}"
+.br
+.ti -1c
+.RI "static const iocshArg \fBxpadConfigArg1\fP = {'server port name', iocshArgString}"
+.br
+.ti -1c
+.RI "static const iocshArg \fBxpadConfigArg2\fP = {'maxBuffers', iocshArgInt}"
+.br
+.ti -1c
+.RI "static const iocshArg \fBxpadConfigArg3\fP = {'maxMemory', iocshArgInt}"
+.br
+.ti -1c
+.RI "static const iocshArg \fBxpadConfigArg4\fP = {'priority', iocshArgInt}"
+.br
+.ti -1c
+.RI "static const iocshArg \fBxpadConfigArg5\fP = {'stackSize', iocshArgInt}"
+.br
+.ti -1c
+.RI "static const iocshArg *const \fBxpadConfigArgs\fP []"
+.br
+.ti -1c
+.RI "static const iocshFuncDef \fBconfigXPAD\fP = {'xpadConfig', 6, xpadConfigArgs}"
+.br
+.in -1c
+.SH "Define Documentation"
+.PP 
+.SS "#define \fBFIRST_XPAD_PARAM\fP   xpad_acq_mode"
+.SS "#define \fBLAST_XPAD_PARAM\fP   xpadAbort"
+.SS "#define \fBMAX_FILENAME_LEN\fP   256"
+.SS "#define \fBMAX_MESSAGE_SIZE\fP   256"<\fBxpad\&.cpp\fP
+.PP
+This is a driver for any XPAD detector\&. It uses a TCP/IP socket to communicate with the XpadXXXServer in version 2\&.x and 3\&.0 XXX being either PCI or USB\&. It can set most of the parameter the detector (and thus server) has to offer\&.
+.PP
+Author: Nicolas Delrio nclsdlr@gmail.com Polytech marseille University of Aix Marseille Intern @ ImXPAD Based on Mark Rivers University of Chicago And the EPICS community 's work
+.PP
+Created: June 20, 2015Random infos:
+.PP
+Timeouts on the asyn interface are in seconds 
+.SS "#define \fBMAX_RETURN_SIZE\fP   1000;"
+.SS "#define \fBNUM_XPAD_PARAMS\fP   ((int)(&\fBLAST_XPAD_PARAM\fP - &\fBFIRST_XPAD_PARAM\fP + 1))"
+.SS "#define \fBxpad_acq_modeString\fP   'XPAD_ACQUISITION_MODE'"
+.SS "#define \fBXPAD_COMMAND_TIMEOUT\fP   180\&.0"
+.SS "#define \fBxpad_flat_fieldString\fP   'XPAD_FLAT_FIELD_CORRECTION_FLAG'"
+.SS "#define \fBxpad_geo_correctionString\fP   'XPAD_GEOMETRICAL_CORRECTION_FLAG'"
+.SS "#define \fBxpad_img_transferString\fP   'XPAD_IMAGE_TRANSFER_FLAG'"
+.SS "#define \fBxpad_inputString\fP   'XPAD_INPUT_SIGNAL'"
+.SS "#define \fBxpad_outformatString\fP   'XPAD_OUTPUT_FORMAT'"
+.SS "#define \fBxpad_outpathString\fP   'XPAD_OUTPUT_SERVER_FILEPATH'"
+.SS "#define \fBxpad_outputString\fP   'XPAD_OUTPUT_SIGNAL'"
+.SS "#define \fBxpad_overflowString\fP   'XPAD_OVERFLOW_TIME'"
+.SS "#define \fBXPAD_POLL_DELAY\fP   \&.01"
+.SS "#define \fBXPAD_SOCKET_TIMEOUT\fP   1\&.0"
+.SS "#define \fBxpad_stacksizeString\fP   'XPAD_STACKSIZE'"
+.SS "#define \fBxpadAbortString\fP   'XPAD_ABORT'"
+.SS "#define \fBxpadChangeModeString\fP   'XPAD_CHANGE_MODE'"Driver-specific parameter strings for the xpad driver 
+.SH "Enumeration Type Documentation"
+.PP 
+.SS "enum \fBxpad_acquisition_mode\fP"
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIAM_standard \fP\fP
+.TP
+\fB\fIAM_detector_burst \fP\fP
+.TP
+\fB\fIAM_comupter_burst \fP\fP
+.TP
+\fB\fIAM_stacking_16b \fP\fP
+.TP
+\fB\fIAM_stacking_32b \fP\fP
+.TP
+\fB\fIAM_single_bunch_16b \fP\fP
+.TP
+\fB\fIAM_single_bunch_32b \fP\fP
+
+.SS "enum \fBxpad_input_signal\fP"
+.PP
+brief Trigger mode choices 
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIIS_internal \fP\fP
+.TP
+\fB\fIIS_external \fP\fP
+.TP
+\fB\fIIS_internal_trigger1 \fP\fP
+.TP
+\fB\fIIS_internal_trigger2 \fP\fP
+
+.SS "enum \fBxpad_mode\fP"
+.PP
+Aquisition mode choices\&. 
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIxmode_aquire \fP\fP
+.TP
+\fB\fIxmode_calib \fP\fP
+.TP
+\fB\fIxmode_config \fP\fP
+.TP
+\fB\fIxmode_loadingcalib \fP\fP
+.TP
+\fB\fIdigitaltest \fP\fP
+.TP
+\fB\fIxmode_idle \fP\fP
+.TP
+\fB\fIxmode_changin \fP\fP
+
+.SS "enum \fBxpad_output_signal\fP"
+.PP
+type of server returns 
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIOS_exposure_busy \fP\fP
+.TP
+\fB\fIOS_shutter_busy \fP\fP
+.TP
+\fB\fIOS_busy_update_overflow \fP\fP
+.TP
+\fB\fIOS_pixel_counter_on \fP\fP
+.TP
+\fB\fIOS_external_gate \fP\fP
+.TP
+\fB\fIOS_exposure_read_done \fP\fP
+.TP
+\fB\fIOS_data_transfer \fP\fP
+.TP
+\fB\fIOS_RAMready_imgbusy \fP\fP
+.TP
+\fB\fIOS_to_localDDR \fP\fP
+.TP
+\fB\fIOS_localDDR_to_PC \fP\fP
+
+.SS "enum \fBxpadStatus_t\fP"
+.PP
+Status choices\&. 
+.PP
+\fBEnumerator: \fP
+.in +1c
+.TP
+\fB\fIxpadStatusIdle \fP\fP
+.TP
+\fB\fIxpadStatusExpose \fP\fP
+.TP
+\fB\fIxpadStatusScan \fP\fP
+.TP
+\fB\fIxpadStatusErase \fP\fP
+.TP
+\fB\fIxpadStatusChangeMode \fP\fP
+.TP
+\fB\fIxpadStatusAborting \fP\fP
+.TP
+\fB\fIxpadStatusError \fP\fP
+.TP
+\fB\fIxpadStatusWaiting \fP\fP
+
+.SH "Function Documentation"
+.PP 
+.SS "static void \fBconfigXPADCallFunc\fP (const iocshArgBuf *args)\fC [static]\fP"
+.SS "\fBepicsExportRegistrar\fP (\fBxpadRegister\fP)"
+.SS "static void \fBtimerCallbackC\fP (void *drvPvt)\fC [static]\fP"
+.PP
+* This function is called when the exposure time timer expires */ 
+.SS "int \fBxpadConfig\fP (const char *portName, const char *serverPort, intmaxBuffers, size_tmaxMemory, intpriority, intstackSize)"
+.PP
+Create an instence of the driver\&. Creates an instence of the driver,
+.PP
+IMPORTANT NOTE: This method is visible from the epics iocsh 
+.SS "static void \fBxpadRegister\fP (void)\fC [static]\fP"
+.SS "static void \fBxpadTaskC\fP (void *drvPvt)\fC [static]\fP"
+.PP
+Task launcher\&. 
+.SH "Variable Documentation"
+.PP 
+.SS "const iocshFuncDef \fBconfigXPAD\fP = {'xpadConfig', 6, xpadConfigArgs}\fC [static]\fP"
+.SS "const char* \fBdriverName\fP = 'xpad'\fC [static]\fP"
+.SS "const iocshArg \fBxpadConfigArg0\fP = {'Port name', iocshArgString}\fC [static]\fP"
+.SS "const iocshArg \fBxpadConfigArg1\fP = {'server port name', iocshArgString}\fC [static]\fP"
+.SS "const iocshArg \fBxpadConfigArg2\fP = {'maxBuffers', iocshArgInt}\fC [static]\fP"
+.SS "const iocshArg \fBxpadConfigArg3\fP = {'maxMemory', iocshArgInt}\fC [static]\fP"
+.SS "const iocshArg \fBxpadConfigArg4\fP = {'priority', iocshArgInt}\fC [static]\fP"
+.SS "const iocshArg \fBxpadConfigArg5\fP = {'stackSize', iocshArgInt}\fC [static]\fP"
+.SS "const iocshArg* const \fBxpadConfigArgs\fP[]\fC [static]\fP"\fBInitial value:\fP
+.PP
+.nf
+  {&xpadConfigArg0,
+                                                     &xpadConfigArg1,
+                                                     &xpadConfigArg2,
+                                                     &xpadConfigArg3,
+                                                     &xpadConfigArg4,
+                                                     &xpadConfigArg5}
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for XPad detectors driver for AreaDetector (EPICS) from the source code\&.

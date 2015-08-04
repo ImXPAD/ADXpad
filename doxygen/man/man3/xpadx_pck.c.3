@@ -1,0 +1,136 @@
+.TH "xpadx_pck.c" 3 "Fri Jul 17 2015" "Version 4" "XPad detectors driver for AreaDetector (EPICS)" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+xpadx_pck.c \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include <stdio\&.h>\fP
+.br
+\fC#include <stddef\&.h>\fP
+.br
+\fC#include <math\&.h>\fP
+.br
+\fC#include <ctype\&.h>\fP
+.br
+\fC#include <string\&.h>\fP
+.br
+\fC#include <stdlib\&.h>\fP
+.br
+\fC#include <unistd\&.h>\fP
+.br
+\fC#include 'types\&.h'\fP
+.br
+\fC#include 'xpadx_pck\&.h'\fP
+.br
+
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBPACKIDENTIFIER\fP   '\\nCCP4 packed image, X: %04d, Y: %04d\\n'"
+.br
+.ti -1c
+.RI "#define \fBPACKBUFSIZ\fP   BUFSIZ"
+.br
+.ti -1c
+.RI "#define \fBDIFFBUFSIZ\fP   16384"
+.br
+.ti -1c
+.RI "#define \fBmax\fP(x, y)   (((x) > (y)) ? (x) : (y))"
+.br
+.ti -1c
+.RI "#define \fBmin\fP(x, y)   (((x) < (y)) ? (x) : (y))"
+.br
+.ti -1c
+.RI "#define \fBabs\fP(x)   (((x) < 0) ? (-(x)) : (x))"
+.br
+.ti -1c
+.RI "#define \fBshift_left\fP(x, n)   (((x) & \fBsetbits\fP[32 - (n)]) << (n))"
+.br
+.ti -1c
+.RI "#define \fBshift_right\fP(x, n)   (((x) >> (n)) & \fBsetbits\fP[32 - (n)])"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "static \fBINT32\fP * \fBdiff_words\fP (\fBINT16\fP *, int, int, \fBINT32\fP *, \fBINT32\fP)"
+.br
+.ti -1c
+.RI "static int \fBpack_chunk\fP ()"
+.br
+.ti -1c
+.RI "static void \fBunpack_word\fP (FILE *, int, int, \fBINT16\fP *)"
+.br
+.ti -1c
+.RI "static void \fBpack_longs\fP ()"
+.br
+.ti -1c
+.RI "static int \fBbits\fP ()"
+.br
+.ti -1c
+.RI "int \fBput_pck\fP (\fBINT16\fP *img, int x, int y, int fdesc)"
+.br
+.ti -1c
+.RI "static int \fBbits\fP (\fBINT32\fP *chunk, int n)"
+.br
+.ti -1c
+.RI "static int \fBpack_chunk\fP (\fBINT32\fP *lng, int nmbr, int bitsize, int fdesc)"
+.br
+.ti -1c
+.RI "static void \fBpack_longs\fP (\fBINT32\fP *lng, int n, \fBCHAR8\fP **target, int *bit, int size)"
+.br
+.ti -1c
+.RI "void \fBget_pck\fP (FILE *fp, \fBINT16\fP *img)"
+.br
+.in -1c
+.SS "Variables"
+
+.in +1c
+.ti -1c
+.RI "const \fBINT32\fP \fBsetbits\fP [33]"
+.br
+.in -1c
+.SH "Define Documentation"
+.PP 
+.SS "#define \fBabs\fP(x)   (((x) < 0) ? (-(x)) : (x))"
+.SS "#define \fBDIFFBUFSIZ\fP   16384"
+.SS "#define \fBmax\fP(x, y)   (((x) > (y)) ? (x) : (y))"
+.SS "#define \fBmin\fP(x, y)   (((x) < (y)) ? (x) : (y))"
+.SS "#define \fBPACKBUFSIZ\fP   BUFSIZ"
+.SS "#define \fBPACKIDENTIFIER\fP   '\\nCCP4 packed image, X: %04d, Y: %04d\\n'"
+.SS "#define \fBshift_left\fP(x, n)   (((x) & \fBsetbits\fP[32 - (n)]) << (n))"
+.SS "#define \fBshift_right\fP(x, n)   (((x) >> (n)) & \fBsetbits\fP[32 - (n)])"
+.SH "Function Documentation"
+.PP 
+.SS "static int \fBbits\fP ()\fC [static]\fP"
+.SS "static int \fBbits\fP (\fBINT32\fP *chunk, intn)\fC [static]\fP"
+.SS "\fBINT32\fP * \fBdiff_words\fP (\fBINT16\fP *word, intx, inty, \fBINT32\fP *diffs, \fBINT32\fPdone)\fC [static]\fP"
+.SS "void \fBget_pck\fP (FILE *fp, \fBINT16\fP *img)"
+.SS "static int \fBpack_chunk\fP ()\fC [static]\fP"
+.SS "static int \fBpack_chunk\fP (\fBINT32\fP *lng, intnmbr, intbitsize, intfdesc)\fC [static]\fP"
+.SS "static void \fBpack_longs\fP ()\fC [static]\fP"
+.SS "static void \fBpack_longs\fP (\fBINT32\fP *lng, intn, \fBCHAR8\fP **target, int *bit, intsize)\fC [static]\fP"
+.SS "int \fBput_pck\fP (\fBINT16\fP *img, intx, inty, intfdesc)"
+.SS "static void \fBunpack_word\fP (FILE *packfile, intx, inty, \fBINT16\fP *img)\fC [static]\fP"
+.SH "Variable Documentation"
+.PP 
+.SS "const \fBINT32\fP \fBsetbits\fP[33]"\fBInitial value:\fP
+.PP
+.nf
+ {0x00000000, 0x00000001, 0x00000003, 0x00000007,
+                          0x0000000F, 0x0000001F, 0x0000003F, 0x0000007F,
+                          0x000000FF, 0x000001FF, 0x000003FF, 0x000007FF,
+                          0x00000FFF, 0x00001FFF, 0x00003FFF, 0x00007FFF,
+                          0x0000FFFF, 0x0001FFFF, 0x0003FFFF, 0x0007FFFF,
+                          0x000FFFFF, 0x001FFFFF, 0x003FFFFF, 0x007FFFFF,
+                          0x00FFFFFF, 0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF,
+                          0x0FFFFFFF, 0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF,
+                          0xFFFFFFFF}
+.fi
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for XPad detectors driver for AreaDetector (EPICS) from the source code\&.

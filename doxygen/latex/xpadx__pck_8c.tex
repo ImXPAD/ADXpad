@@ -1,0 +1,220 @@
+\hypertarget{xpadx__pck_8c}{\section{xpadx\-\_\-pck.\-c \-File \-Reference}
+\label{xpadx__pck_8c}\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}}
+}
+{\ttfamily \#include $<$stdio.\-h$>$}\*
+{\ttfamily \#include $<$stddef.\-h$>$}\*
+{\ttfamily \#include $<$math.\-h$>$}\*
+{\ttfamily \#include $<$ctype.\-h$>$}\*
+{\ttfamily \#include $<$string.\-h$>$}\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\*
+{\ttfamily \#include $<$unistd.\-h$>$}\*
+{\ttfamily \#include \char`\"{}types.\-h\char`\"{}}\*
+{\ttfamily \#include \char`\"{}xpadx\-\_\-pck.\-h\char`\"{}}\*
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{xpadx__pck_8c_aa335aab2817f9ba4767c53592f5f0806}{\-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R}~\char`\"{}$\backslash$n\-C\-C\-P4 packed image, \-X\-: \%04d, Y\-: \%04d$\backslash$n\char`\"{}
+\item 
+\#define \hyperlink{xpadx__pck_8c_a908f2b2fec279db43da16764f549073a}{\-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z}~\-B\-U\-F\-S\-I\-Z
+\item 
+\#define \hyperlink{xpadx__pck_8c_a59bb840e945696ccc40860af5dc31c12}{\-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z}~16384
+\item 
+\#define \hyperlink{xpadx__pck_8c_ac39d9cef6a5e030ba8d9e11121054268}{max}(x, y)~(((x) $>$ (y)) ? (x) \-: (y))
+\item 
+\#define \hyperlink{xpadx__pck_8c_abb702d8b501669a23aa0ab3b281b9384}{min}(x, y)~(((x) $<$ (y)) ? (x) \-: (y))
+\item 
+\#define \hyperlink{xpadx__pck_8c_a3aa069ac3980707dae1e0530f50d59e4}{abs}(x)~(((x) $<$ 0) ? (-\/(x)) \-: (x))
+\item 
+\#define \hyperlink{xpadx__pck_8c_a7f356b3f1f206d9a8cf1bc49e61ccd09}{shift\-\_\-left}(x, n)~(((x) \& \hyperlink{xpadx__pck_8c_a7de7e664a67a9dd0096231592d368139}{setbits}\mbox{[}32 -\/ (n)\mbox{]}) $<$$<$ (n))
+\item 
+\#define \hyperlink{xpadx__pck_8c_a942b79e80b56b29cad0db00fbf37025e}{shift\-\_\-right}(x, n)~(((x) $>$$>$ (n)) \& \hyperlink{xpadx__pck_8c_a7de7e664a67a9dd0096231592d368139}{setbits}\mbox{[}32 -\/ (n)\mbox{]})
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32} $\ast$ \hyperlink{xpadx__pck_8c_a2e486a261f4c8a2d93428e5d3cb8d6cd}{diff\-\_\-words} (\hyperlink{types_8h_abc743ce126c3ada10501baffb3ca2295}{\-I\-N\-T16} $\ast$, int, int, \hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32} $\ast$, \hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32})
+\item 
+static int \hyperlink{xpadx__pck_8c_ab2818a814084be99c1500c13fb91508f}{pack\-\_\-chunk} ()
+\item 
+static void \hyperlink{xpadx__pck_8c_a252b7043353f0132651046a9aded5e8b}{unpack\-\_\-word} (\-F\-I\-L\-E $\ast$, int, int, \hyperlink{types_8h_abc743ce126c3ada10501baffb3ca2295}{\-I\-N\-T16} $\ast$)
+\item 
+static void \hyperlink{xpadx__pck_8c_aa44b4b0fb01b33c4b90e2fef91e81c56}{pack\-\_\-longs} ()
+\item 
+static int \hyperlink{xpadx__pck_8c_a295bd316de1259b0db9d20133866fefc}{bits} ()
+\item 
+int \hyperlink{xpadx__pck_8c_ace9de98d1c80565818fc30b46e3be55e}{put\-\_\-pck} (\hyperlink{types_8h_abc743ce126c3ada10501baffb3ca2295}{\-I\-N\-T16} $\ast$img, int x, int y, int fdesc)
+\item 
+static int \hyperlink{xpadx__pck_8c_af46dfa080ac74cac68f91c911dfb6920}{bits} (\hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32} $\ast$chunk, int n)
+\item 
+static int \hyperlink{xpadx__pck_8c_aa651ced6b611ef52152dbf9db4af2668}{pack\-\_\-chunk} (\hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32} $\ast$lng, int nmbr, int bitsize, int fdesc)
+\item 
+static void \hyperlink{xpadx__pck_8c_a5a79b2681f4f29bfe3da99f439c7ffb3}{pack\-\_\-longs} (\hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32} $\ast$lng, int n, \hyperlink{types_8h_ae1b40a762a49f63468e38355f8600660}{\-C\-H\-A\-R8} $\ast$$\ast$target, int $\ast$bit, int size)
+\item 
+void \hyperlink{xpadx__pck_8c_a5937e50b2a7be74848871267bffbf425}{get\-\_\-pck} (\-F\-I\-L\-E $\ast$fp, \hyperlink{types_8h_abc743ce126c3ada10501baffb3ca2295}{\-I\-N\-T16} $\ast$img)
+\end{DoxyCompactItemize}
+\subsection*{\-Variables}
+\begin{DoxyCompactItemize}
+\item 
+const \hyperlink{types_8h_aac92c5ec332dafe0abb24688dad1b795}{\-I\-N\-T32} \hyperlink{xpadx__pck_8c_a7de7e664a67a9dd0096231592d368139}{setbits} \mbox{[}33\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{xpadx__pck_8c_a3aa069ac3980707dae1e0530f50d59e4}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!abs@{abs}}
+\index{abs@{abs}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{abs}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf abs}(
+\begin{DoxyParamCaption}
+\item[{}]{x}
+\end{DoxyParamCaption}
+)~(((x) $<$ 0) ? (-\/(x)) \-: (x))}}\label{xpadx__pck_8c_a3aa069ac3980707dae1e0530f50d59e4}
+\hypertarget{xpadx__pck_8c_a59bb840e945696ccc40860af5dc31c12}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!\-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z@{\-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z}}
+\index{\-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z@{\-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{\-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-D\-I\-F\-F\-B\-U\-F\-S\-I\-Z}~16384}}\label{xpadx__pck_8c_a59bb840e945696ccc40860af5dc31c12}
+\hypertarget{xpadx__pck_8c_ac39d9cef6a5e030ba8d9e11121054268}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!max@{max}}
+\index{max@{max}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{max}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf max}(
+\begin{DoxyParamCaption}
+\item[{}]{x, }
+\item[{}]{y}
+\end{DoxyParamCaption}
+)~(((x) $>$ (y)) ? (x) \-: (y))}}\label{xpadx__pck_8c_ac39d9cef6a5e030ba8d9e11121054268}
+\hypertarget{xpadx__pck_8c_abb702d8b501669a23aa0ab3b281b9384}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!min@{min}}
+\index{min@{min}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{min}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf min}(
+\begin{DoxyParamCaption}
+\item[{}]{x, }
+\item[{}]{y}
+\end{DoxyParamCaption}
+)~(((x) $<$ (y)) ? (x) \-: (y))}}\label{xpadx__pck_8c_abb702d8b501669a23aa0ab3b281b9384}
+\hypertarget{xpadx__pck_8c_a908f2b2fec279db43da16764f549073a}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!\-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z@{\-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z}}
+\index{\-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z@{\-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{\-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-P\-A\-C\-K\-B\-U\-F\-S\-I\-Z}~\-B\-U\-F\-S\-I\-Z}}\label{xpadx__pck_8c_a908f2b2fec279db43da16764f549073a}
+\hypertarget{xpadx__pck_8c_aa335aab2817f9ba4767c53592f5f0806}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!\-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R@{\-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R}}
+\index{\-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R@{\-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{\-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-P\-A\-C\-K\-I\-D\-E\-N\-T\-I\-F\-I\-E\-R}~\char`\"{}$\backslash$n\-C\-C\-P4 packed image, \-X\-: \%04d, Y\-: \%04d$\backslash$n\char`\"{}}}\label{xpadx__pck_8c_aa335aab2817f9ba4767c53592f5f0806}
+\hypertarget{xpadx__pck_8c_a7f356b3f1f206d9a8cf1bc49e61ccd09}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!shift\-\_\-left@{shift\-\_\-left}}
+\index{shift\-\_\-left@{shift\-\_\-left}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{shift\-\_\-left}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf shift\-\_\-left}(
+\begin{DoxyParamCaption}
+\item[{}]{x, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)~(((x) \& {\bf setbits}\mbox{[}32 -\/ (n)\mbox{]}) $<$$<$ (n))}}\label{xpadx__pck_8c_a7f356b3f1f206d9a8cf1bc49e61ccd09}
+\hypertarget{xpadx__pck_8c_a942b79e80b56b29cad0db00fbf37025e}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!shift\-\_\-right@{shift\-\_\-right}}
+\index{shift\-\_\-right@{shift\-\_\-right}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{shift\-\_\-right}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf shift\-\_\-right}(
+\begin{DoxyParamCaption}
+\item[{}]{x, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)~(((x) $>$$>$ (n)) \& {\bf setbits}\mbox{[}32 -\/ (n)\mbox{]})}}\label{xpadx__pck_8c_a942b79e80b56b29cad0db00fbf37025e}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{xpadx__pck_8c_a295bd316de1259b0db9d20133866fefc}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!bits@{bits}}
+\index{bits@{bits}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{bits}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf bits} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_a295bd316de1259b0db9d20133866fefc}
+\hypertarget{xpadx__pck_8c_af46dfa080ac74cac68f91c911dfb6920}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!bits@{bits}}
+\index{bits@{bits}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{bits}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf bits} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-I\-N\-T32} $\ast$}]{chunk, }
+\item[{int}]{n}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_af46dfa080ac74cac68f91c911dfb6920}
+\hypertarget{xpadx__pck_8c_a2e486a261f4c8a2d93428e5d3cb8d6cd}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!diff\-\_\-words@{diff\-\_\-words}}
+\index{diff\-\_\-words@{diff\-\_\-words}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{diff\-\_\-words}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-I\-N\-T32} $\ast$ {\bf diff\-\_\-words} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-I\-N\-T16} $\ast$}]{word, }
+\item[{int}]{x, }
+\item[{int}]{y, }
+\item[{{\bf \-I\-N\-T32} $\ast$}]{diffs, }
+\item[{{\bf \-I\-N\-T32}}]{done}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_a2e486a261f4c8a2d93428e5d3cb8d6cd}
+\hypertarget{xpadx__pck_8c_a5937e50b2a7be74848871267bffbf425}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!get\-\_\-pck@{get\-\_\-pck}}
+\index{get\-\_\-pck@{get\-\_\-pck}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{get\-\_\-pck}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf get\-\_\-pck} (
+\begin{DoxyParamCaption}
+\item[{\-F\-I\-L\-E $\ast$}]{fp, }
+\item[{{\bf \-I\-N\-T16} $\ast$}]{img}
+\end{DoxyParamCaption}
+)}}\label{xpadx__pck_8c_a5937e50b2a7be74848871267bffbf425}
+\hypertarget{xpadx__pck_8c_ab2818a814084be99c1500c13fb91508f}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!pack\-\_\-chunk@{pack\-\_\-chunk}}
+\index{pack\-\_\-chunk@{pack\-\_\-chunk}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{pack\-\_\-chunk}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf pack\-\_\-chunk} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_ab2818a814084be99c1500c13fb91508f}
+\hypertarget{xpadx__pck_8c_aa651ced6b611ef52152dbf9db4af2668}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!pack\-\_\-chunk@{pack\-\_\-chunk}}
+\index{pack\-\_\-chunk@{pack\-\_\-chunk}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{pack\-\_\-chunk}]{\setlength{\rightskip}{0pt plus 5cm}static int {\bf pack\-\_\-chunk} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-I\-N\-T32} $\ast$}]{lng, }
+\item[{int}]{nmbr, }
+\item[{int}]{bitsize, }
+\item[{int}]{fdesc}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_aa651ced6b611ef52152dbf9db4af2668}
+\hypertarget{xpadx__pck_8c_aa44b4b0fb01b33c4b90e2fef91e81c56}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!pack\-\_\-longs@{pack\-\_\-longs}}
+\index{pack\-\_\-longs@{pack\-\_\-longs}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{pack\-\_\-longs}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf pack\-\_\-longs} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_aa44b4b0fb01b33c4b90e2fef91e81c56}
+\hypertarget{xpadx__pck_8c_a5a79b2681f4f29bfe3da99f439c7ffb3}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!pack\-\_\-longs@{pack\-\_\-longs}}
+\index{pack\-\_\-longs@{pack\-\_\-longs}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{pack\-\_\-longs}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf pack\-\_\-longs} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-I\-N\-T32} $\ast$}]{lng, }
+\item[{int}]{n, }
+\item[{{\bf \-C\-H\-A\-R8} $\ast$$\ast$}]{target, }
+\item[{int $\ast$}]{bit, }
+\item[{int}]{size}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_a5a79b2681f4f29bfe3da99f439c7ffb3}
+\hypertarget{xpadx__pck_8c_ace9de98d1c80565818fc30b46e3be55e}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!put\-\_\-pck@{put\-\_\-pck}}
+\index{put\-\_\-pck@{put\-\_\-pck}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{put\-\_\-pck}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf put\-\_\-pck} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-I\-N\-T16} $\ast$}]{img, }
+\item[{int}]{x, }
+\item[{int}]{y, }
+\item[{int}]{fdesc}
+\end{DoxyParamCaption}
+)}}\label{xpadx__pck_8c_ace9de98d1c80565818fc30b46e3be55e}
+\hypertarget{xpadx__pck_8c_a252b7043353f0132651046a9aded5e8b}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!unpack\-\_\-word@{unpack\-\_\-word}}
+\index{unpack\-\_\-word@{unpack\-\_\-word}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{unpack\-\_\-word}]{\setlength{\rightskip}{0pt plus 5cm}static void {\bf unpack\-\_\-word} (
+\begin{DoxyParamCaption}
+\item[{\-F\-I\-L\-E $\ast$}]{packfile, }
+\item[{int}]{x, }
+\item[{int}]{y, }
+\item[{{\bf \-I\-N\-T16} $\ast$}]{img}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{xpadx__pck_8c_a252b7043353f0132651046a9aded5e8b}
+
+
+\subsection{\-Variable \-Documentation}
+\hypertarget{xpadx__pck_8c_a7de7e664a67a9dd0096231592d368139}{\index{xpadx\-\_\-pck.\-c@{xpadx\-\_\-pck.\-c}!setbits@{setbits}}
+\index{setbits@{setbits}!xpadx_pck.c@{xpadx\-\_\-pck.\-c}}
+\subsubsection[{setbits}]{\setlength{\rightskip}{0pt plus 5cm}const {\bf \-I\-N\-T32} {\bf setbits}\mbox{[}33\mbox{]}}}\label{xpadx__pck_8c_a7de7e664a67a9dd0096231592d368139}
+{\bfseries \-Initial value\-:}
+\begin{DoxyCode}
+ {0x00000000, 0x00000001, 0x00000003, 0x00000007,
+                          0x0000000F, 0x0000001F, 0x0000003F, 0x0000007F,
+                          0x000000FF, 0x000001FF, 0x000003FF, 0x000007FF,
+                          0x00000FFF, 0x00001FFF, 0x00003FFF, 0x00007FFF,
+                          0x0000FFFF, 0x0001FFFF, 0x0003FFFF, 0x0007FFFF,
+                          0x000FFFFF, 0x001FFFFF, 0x003FFFFF, 0x007FFFFF,
+                          0x00FFFFFF, 0x01FFFFFF, 0x03FFFFFF, 0x07FFFFFF,
+                          0x0FFFFFFF, 0x1FFFFFFF, 0x3FFFFFFF, 0x7FFFFFFF,
+                          0xFFFFFFFF}
+\end{DoxyCode}

@@ -1,0 +1,8 @@
+##################### 
+# prepare MEDM path 
+# 
+
+#export medm=/home/nicolas/Documents/epics/extensions/bin/linux-x86_64/medm 
+#export EPICS_DISPLAY_PATH=/home/nicolas/Documents/epics/support/areaDetector/ADCore/ADApp/op/adl:/home/nicolas/Documents/epics/support/areaDetector/ADXpad/xpadApp/op/adl:/home/nicolas/Documents/epics/support/asyn4-26/opi/medm/
+medm -x -macro "P=13XPAD_1:, R=cam1:" xpad.adl &
+../../bin/linux-x86_64/xpadApp st.cmd

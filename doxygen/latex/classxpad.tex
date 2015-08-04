@@ -1,0 +1,437 @@
+\hypertarget{classxpad}{\section{xpad \-Class \-Reference}
+\label{classxpad}\index{xpad@{xpad}}
+}
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classxpad_aeef1391bfb5623f05113aea78e0c9271}{xpad} (const char $\ast$port\-Name, const char $\ast$xpad\-Port, int max\-Buffers, size\-\_\-t max\-Memory, int priority, int stack\-Size)
+\begin{DoxyCompactList}\small\item\em \-Create and initialize the driver and it's parameters. \end{DoxyCompactList}\item 
+virtual asyn\-Status \hyperlink{classxpad_a1b29d19584a2b16ce06c5d2dbd3fadef}{write\-Int32} (asyn\-User $\ast$pasyn\-User, epics\-Int32 value)
+\begin{DoxyCompactList}\small\item\em \-Does not only write, called when a parameter is written, this performs associated actions. \end{DoxyCompactList}\item 
+virtual void \hyperlink{classxpad_abb1726d4d8d836ed8337ff66639b2efd}{report} (\-F\-I\-L\-E $\ast$fp, int details)
+\begin{DoxyCompactList}\small\item\em \-Report status of the driver. \end{DoxyCompactList}\item 
+asyn\-Status \hyperlink{classxpad_a9265043d66a894cfc09b8cbfaec5840a}{xpad\-Init} ()
+\begin{DoxyCompactList}\small\item\em \-Initialize the detector and asks if it is ready to be the best detector ever. \end{DoxyCompactList}\item 
+void \hyperlink{classxpad_a62ee75efbfe797257aaee305fd34d9e4}{xpad\-Task} ()
+\begin{DoxyCompactList}\small\item\em \-Main xpad \-Thread. \end{DoxyCompactList}\item 
+asyn\-Status \hyperlink{classxpad_ad7bb20039316d5a9517f53de72580b5c}{get\-Image\-Stream} ()
+\begin{DoxyCompactList}\small\item\em \-Start the exposure with the previously given parameters catch the image sent by the server. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{\-Public \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+epics\-Event\-Id \hyperlink{classxpad_aca4efe99abea333e025cc2aec3350c17}{start\-Event\-Id}
+\item 
+epics\-Event\-Id \hyperlink{classxpad_a835f854ed3b92d3bc8eb4e2b1014c43c}{stop\-Event\-Id}
+\item 
+epics\-Event\-Id \hyperlink{classxpad_a368f42021436284673610b452e0b1d86}{abort\-Event\-Id}
+\end{DoxyCompactItemize}
+\subsection*{\-Protected \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{classxpad_ab7be2bf57518fbcac8f93f572f20ae4f}{xpad\-\_\-acq\-\_\-mode}
+\item 
+int \hyperlink{classxpad_a82a425b4a530240f19a9cb4d2c3795d2}{xpad\-\_\-geo\-\_\-correction}
+\begin{DoxyCompactList}\small\item\em \-Toggle geometrical correction\-: default 0. \end{DoxyCompactList}\item 
+int \hyperlink{classxpad_a6883444a239704d1d808b241156babd2}{xpad\-\_\-flat\-\_\-field}
+\begin{DoxyCompactList}\small\item\em \-Toggle flat field correction\-: default 0. \end{DoxyCompactList}\item 
+int \hyperlink{classxpad_ac6cc32ae27434cafb507aeaa21d05a86}{xpad\-\_\-img\-\_\-transfer}
+\begin{DoxyCompactList}\small\item\em image transfer flag \end{DoxyCompactList}\item 
+int \hyperlink{classxpad_a55cbc1f3e75d5cd322863fb3c00f027c}{xpad\-Change\-Mode}
+\item 
+int \hyperlink{classxpad_a8f65d3ade5862e87afbe681372e7ab17}{xpad\-\_\-input}
+\begin{DoxyCompactList}\small\item\em often called triggers \end{DoxyCompactList}\item 
+int \hyperlink{classxpad_aff6cab8fd160aa9e9c1dbd4a2cb45fe6}{xpad\-\_\-output}
+\item 
+int \hyperlink{classxpad_ae0a204dd249083d430c3df4f409f0904}{xpad\-Abort}
+\end{DoxyCompactItemize}
+\subsection*{\-Private \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+asyn\-Status \hyperlink{classxpad_a31376e2089c2a75853047a42414d905d}{read\-File} (const char $\ast$file\-Name, \-N\-D\-Array $\ast$p\-Image)
+\item 
+asyn\-Status \hyperlink{classxpad_ab6b499351a4059fe1b0b16d8ecbeb71f}{write\-Server} (const char $\ast$output)
+\item 
+asyn\-Status \hyperlink{classxpad_ad8c837fa324429acb3b514203e14b58b}{read\-Server} (char $\ast$input, size\-\_\-t max\-Chars, double timeout)
+\item 
+asyn\-Status \hyperlink{classxpad_a2c6894b37abc89be6830cc46f18277ed}{readimg\-Server} (char $\ast$img, double timeout)
+\item 
+asyn\-Status \hyperlink{classxpad_aee07cdb64b82b6f102e3ae2659226423}{set\-Exposure\-Parameters} (void)
+\begin{DoxyCompactList}\small\item\em \-Control and possible resetting of every exposure parameter. \end{DoxyCompactList}\item 
+asyn\-Status \hyperlink{classxpad_a9c6c269711e3cf514a5883856d1627df}{change\-Mode} ()
+\item 
+asyn\-Status \hyperlink{classxpad_af778260bbf7b67db0488952f7add28aa}{acquire\-Frame} ()
+\begin{DoxyCompactList}\small\item\em \-Lauch timers and start exposure. \end{DoxyCompactList}\item 
+void \hyperlink{classxpad_a825248151ba164810cf7b933c76c3abb}{readout\-Frame} (int buffer\-Number, const char $\ast$file\-Name, int wait)
+\item 
+void \hyperlink{classxpad_a2d4643b8f437d9c0b393e2b41cc8b950}{get\-Image\-Data\-Task} ()
+\item 
+asyn\-Status \hyperlink{classxpad_a20144d5d2fa1ad9e106baac2a168780c}{wait\-For\-Completion} (const char $\ast$done\-String, char $\ast$returnstr, double timeout)
+\end{DoxyCompactItemize}
+\subsection*{\-Private \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+char \hyperlink{classxpad_a421021783f2a42b2006d47747670b90a}{emptystr} \mbox{[}128\mbox{]}
+\item 
+epics\-Time\-Stamp \hyperlink{classxpad_a9abf8c53880f5277a9c8a62074a3709a}{acq\-Start\-Time}
+\item 
+epics\-Time\-Stamp \hyperlink{classxpad_af7d78280f3004beb8930b19bba9a206f}{acq\-End\-Time}
+\item 
+epics\-Timer\-Id \hyperlink{classxpad_ac3aa333c231dc3f8a811a2301a3db32c}{timer\-Id}
+\item 
+\hyperlink{xpad_8cpp_a622a04a516a79d400d871fb688e3dd96}{xpad\-\_\-mode} \hyperlink{classxpad_a7b04fa77731f4940fe6de23021e23105}{mode}
+\item 
+char \hyperlink{classxpad_add9855faa308738d97cfc8cae9c29831}{to\-Server} \mbox{[}256\mbox{]}
+\item 
+char \hyperlink{classxpad_a2df91f1005b18ed37258aa15b667f6d3}{from\-Server} \mbox{[}4096\mbox{]}
+\item 
+\-N\-D\-Array $\ast$ \hyperlink{classxpad_afd5a1434a37a88e59c50cd4efcd807af}{p\-Data}
+\item 
+asyn\-User $\ast$ \hyperlink{classxpad_af165532e4b31b84e3efec3d2b1052727}{pasyn\-User\-Server}
+\item 
+bool \hyperlink{classxpad_a6429424bf4137e8f3e9896c67721a1db}{ready}
+\item 
+const char $\ast$ \hyperlink{classxpad_a965f7dd05153aa6d99ba9a3a8e0e9db8}{server\-Port}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-Driver for xpad online pixel array detectors; communicates with the \-Xpad\-P\-C\-I\-Server and \-X\-Pad\-U\-S\-B\-Server programs over a \-T\-C\-P/\-I\-P socket . \-The \-X\-Pad\-X\-X\-X\-Server program must be running listening for commands on a given port. \-This is done by running it on a specified port f.\-e. \char`\"{}\-Xpad\-P\-C\-I\-Server 3456\char`\"{} \-In this example 3456 is the \-T\-C\-P/\-I\-P port number that the \-Xpad\-X\-X\-X\-Server and this driver will use to communicate. \-If you are running the server on another port please change the value in the st.\-cmd file 
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{classxpad_aeef1391bfb5623f05113aea78e0c9271}{\index{xpad@{xpad}!xpad@{xpad}}
+\index{xpad@{xpad}!xpad@{xpad}}
+\subsubsection[{xpad}]{\setlength{\rightskip}{0pt plus 5cm}{\bf xpad\-::xpad} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{port\-Name, }
+\item[{const char $\ast$}]{server\-Port, }
+\item[{int}]{max\-Buffers, }
+\item[{size\-\_\-t}]{max\-Memory, }
+\item[{int}]{priority, }
+\item[{int}]{stack\-Size}
+\end{DoxyParamCaption}
+)}}\label{classxpad_aeef1391bfb5623f05113aea78e0c9271}
+
+
+\-Create and initialize the driver and it's parameters. 
+
+\-Constructor for xpad driver; most parameters are simply passed to \-A\-D\-Driver\-::\-A\-D\-Driver. \-After calling the base class constructor this method creates a thread to collect the detector data, and sets reasonable default values for the parameters defined in this class and \-A\-D\-Driver. 
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em port\-Name} & \-The name of the asyn port driver to be created. \\
+\hline
+\mbox{\tt in}  & {\em server\-Port} & \-The name of the asyn port driver previously created with drv\-Asyn\-I\-P\-Port\-Configure connected to the xpaddtb program. \\
+\hline
+\mbox{\tt in}  & {\em max\-Buffers} & \-The maximum number of \-N\-D\-Array buffers that the \-N\-D\-Array\-Pool for this driver is allowed to allocate. \-Set this to -\/1 to allow an unlimited number of buffers. \\
+\hline
+\mbox{\tt in}  & {\em max\-Memory} & \-The maximum amount of memory that the \-N\-D\-Array\-Pool for this driver is allowed to allocate. \-Set this to -\/1 to allow an unlimited amount of memory. \\
+\hline
+\mbox{\tt in}  & {\em priority} & \-The thread priority for the asyn port driver thread. \\
+\hline
+\mbox{\tt in}  & {\em stack\-Size} & \-The stack size for the asyn port driver thread. \\
+\hline
+\end{DoxyParams}
+
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classxpad_af778260bbf7b67db0488952f7add28aa}{\index{xpad@{xpad}!acquire\-Frame@{acquire\-Frame}}
+\index{acquire\-Frame@{acquire\-Frame}!xpad@{xpad}}
+\subsubsection[{acquire\-Frame}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::acquire\-Frame} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_af778260bbf7b67db0488952f7add28aa}
+
+
+\-Lauch timers and start exposure. 
+
+$\ast$ \-Get current values of some parameters $\ast$/
+
+$\ast$ \-We need to append the extension $\ast$/
+
+$\ast$ \-Erase before exposure if set $\ast$/ /if (erase\-Mode == xpad\-Erase\-Before) \{ /status = this-\/$>$erase(); /if (status) return(status); /\}
+
+$\ast$ \-Set the the start time for the \-Time\-Remaining counter $\ast$/
+
+$\ast$ \-Wait for the exposure time using epics\-Event\-Wait\-With\-Timeout,
+
+$\ast$ \-The acquisition was stopped before the time was complete $\ast$/
+
+$\ast$ \-Call the callbacks to update any changes $\ast$/
+
+$\ast$ \-If array\-Callbacks is set then read the file back in $\ast$/ \hypertarget{classxpad_a9c6c269711e3cf514a5883856d1627df}{\index{xpad@{xpad}!change\-Mode@{change\-Mode}}
+\index{change\-Mode@{change\-Mode}!xpad@{xpad}}
+\subsubsection[{change\-Mode}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::change\-Mode} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a9c6c269711e3cf514a5883856d1627df}
+\hypertarget{classxpad_a2d4643b8f437d9c0b393e2b41cc8b950}{\index{xpad@{xpad}!get\-Image\-Data\-Task@{get\-Image\-Data\-Task}}
+\index{get\-Image\-Data\-Task@{get\-Image\-Data\-Task}!xpad@{xpad}}
+\subsubsection[{get\-Image\-Data\-Task}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf xpad\-::get\-Image\-Data\-Task} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a2d4643b8f437d9c0b393e2b41cc8b950}
+\hypertarget{classxpad_ad7bb20039316d5a9517f53de72580b5c}{\index{xpad@{xpad}!get\-Image\-Stream@{get\-Image\-Stream}}
+\index{get\-Image\-Stream@{get\-Image\-Stream}!xpad@{xpad}}
+\subsubsection[{get\-Image\-Stream}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::get\-Image\-Stream} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classxpad_ad7bb20039316d5a9517f53de72580b5c}
+
+
+\-Start the exposure with the previously given parameters catch the image sent by the server. 
+
+\-Set of first parameters
+
+\-Start the exposure and wait for the server resposne
+
+\-We use the first recieved bytes to set and allocate the logical structure that will serve as a buffer for our image
+
+\-Ghetto conversion from recieved octets to 32bits integers
+
+the image is streamed that way\-: (datasize)(width)(height)(data) \-:\-: (uint32)(uint32)(uint32)((uint32)$\ast$width$\ast$height)
+
+\-Transfer of the recieved frames in the buffer
+
+\-Last parameters (could be compared to metadatas) are then set
+
+\-Once complete the buffer is transfered where it is needed
+
+\-Memory release \hypertarget{classxpad_a31376e2089c2a75853047a42414d905d}{\index{xpad@{xpad}!read\-File@{read\-File}}
+\index{read\-File@{read\-File}!xpad@{xpad}}
+\subsubsection[{read\-File}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::read\-File} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{file\-Name, }
+\item[{\-N\-D\-Array $\ast$}]{p\-Image}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a31376e2089c2a75853047a42414d905d}
+\hypertarget{classxpad_a2c6894b37abc89be6830cc46f18277ed}{\index{xpad@{xpad}!readimg\-Server@{readimg\-Server}}
+\index{readimg\-Server@{readimg\-Server}!xpad@{xpad}}
+\subsubsection[{readimg\-Server}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::readimg\-Server} (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{img, }
+\item[{double}]{timeout}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a2c6894b37abc89be6830cc46f18277ed}
+\hypertarget{classxpad_a825248151ba164810cf7b933c76c3abb}{\index{xpad@{xpad}!readout\-Frame@{readout\-Frame}}
+\index{readout\-Frame@{readout\-Frame}!xpad@{xpad}}
+\subsubsection[{readout\-Frame}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf xpad\-::readout\-Frame} (
+\begin{DoxyParamCaption}
+\item[{int}]{buffer\-Number, }
+\item[{const char $\ast$}]{file\-Name, }
+\item[{int}]{wait}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a825248151ba164810cf7b933c76c3abb}
+\hypertarget{classxpad_ad8c837fa324429acb3b514203e14b58b}{\index{xpad@{xpad}!read\-Server@{read\-Server}}
+\index{read\-Server@{read\-Server}!xpad@{xpad}}
+\subsubsection[{read\-Server}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::read\-Server} (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{input, }
+\item[{size\-\_\-t}]{max\-Chars, }
+\item[{double}]{timeout}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_ad8c837fa324429acb3b514203e14b58b}
+\hypertarget{classxpad_abb1726d4d8d836ed8337ff66639b2efd}{\index{xpad@{xpad}!report@{report}}
+\index{report@{report}!xpad@{xpad}}
+\subsubsection[{report}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf xpad\-::report} (
+\begin{DoxyParamCaption}
+\item[{\-F\-I\-L\-E $\ast$}]{fp, }
+\item[{int}]{details}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}\label{classxpad_abb1726d4d8d836ed8337ff66639b2efd}
+
+
+\-Report status of the driver. 
+
+\-Report status of the driver. \-Prints details about the driver if details$>$0. \-It then calls the \-A\-D\-Driver\-::report() method. 
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em fp} & \-File pointed passed by caller where the output is written to. \\
+\hline
+\mbox{\tt in}  & {\em details} & \-If $>$0 then driver details are printed. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classxpad_aee07cdb64b82b6f102e3ae2659226423}{\index{xpad@{xpad}!set\-Exposure\-Parameters@{set\-Exposure\-Parameters}}
+\index{set\-Exposure\-Parameters@{set\-Exposure\-Parameters}!xpad@{xpad}}
+\subsubsection[{set\-Exposure\-Parameters}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::set\-Exposure\-Parameters} (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_aee07cdb64b82b6f102e3ae2659226423}
+
+
+\-Control and possible resetting of every exposure parameter. 
+
+\-This control parameters set by the user and send it to the \-X\-Pad if it is the first exposure or for a reason ther was a bug on the last one \-We initialize the \-X\-P\-A\-D detector
+
+\-The core of this function mainly control the values of every exposure parameters and reset them in case of bad values \-Parameters such as\-:
+
+\-Acquisiton mode
+
+\-Geometrical correction flag
+
+\-Flat field correction flag
+
+\-Image transfer flag
+
+\-Input signals (trigger modes)
+
+\-Output signal
+
+\-Number of \-Images
+
+\-Exposure \-Time
+
+\-Time between images
+
+\-The overflow, output format stacksize and server path file
+
+\-Sendin config to server
+
+\-We need the image size to prepare the buffer recieving the image \-This can change depending on geometrical corection status this cannot work on \-Xpad\-Server under version 3.\-0 so for now its on commented in the source till servers are updated \hypertarget{classxpad_a20144d5d2fa1ad9e106baac2a168780c}{\index{xpad@{xpad}!wait\-For\-Completion@{wait\-For\-Completion}}
+\index{wait\-For\-Completion@{wait\-For\-Completion}!xpad@{xpad}}
+\subsubsection[{wait\-For\-Completion}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::wait\-For\-Completion} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{done\-String, }
+\item[{char $\ast$}]{returnstr, }
+\item[{double}]{timeout}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a20144d5d2fa1ad9e106baac2a168780c}
+\hypertarget{classxpad_a1b29d19584a2b16ce06c5d2dbd3fadef}{\index{xpad@{xpad}!write\-Int32@{write\-Int32}}
+\index{write\-Int32@{write\-Int32}!xpad@{xpad}}
+\subsubsection[{write\-Int32}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::write\-Int32} (
+\begin{DoxyParamCaption}
+\item[{asyn\-User $\ast$}]{pasyn\-User, }
+\item[{epics\-Int32}]{value}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}virtual\mbox{]}}}}\label{classxpad_a1b29d19584a2b16ce06c5d2dbd3fadef}
+
+
+\-Does not only write, called when a parameter is written, this performs associated actions. 
+
+\-Called when asyn clients call pasyn\-Int32-\/$>$write(). \-This function performs actions for some parameters, including \-A\-D\-Acquire, xpad\-Erase, etc. \-For all parameters it sets the value in the parameter library and calls any registered callbacks.. 
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em pasyn\-User} & pasyn\-User structure that encodes the reason and address. \\
+\hline
+\mbox{\tt in}  & {\em value} & \-Value to write. \\
+\hline
+\end{DoxyParams}
+\hypertarget{classxpad_ab6b499351a4059fe1b0b16d8ecbeb71f}{\index{xpad@{xpad}!write\-Server@{write\-Server}}
+\index{write\-Server@{write\-Server}!xpad@{xpad}}
+\subsubsection[{write\-Server}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::write\-Server} (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{output}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_ab6b499351a4059fe1b0b16d8ecbeb71f}
+\hypertarget{classxpad_a9265043d66a894cfc09b8cbfaec5840a}{\index{xpad@{xpad}!xpad\-Init@{xpad\-Init}}
+\index{xpad\-Init@{xpad\-Init}!xpad@{xpad}}
+\subsubsection[{xpad\-Init}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-Status {\bf xpad\-::xpad\-Init} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classxpad_a9265043d66a894cfc09b8cbfaec5840a}
+
+
+\-Initialize the detector and asks if it is ready to be the best detector ever. 
+
+\hypertarget{classxpad_a62ee75efbfe797257aaee305fd34d9e4}{\index{xpad@{xpad}!xpad\-Task@{xpad\-Task}}
+\index{xpad\-Task@{xpad\-Task}!xpad@{xpad}}
+\subsubsection[{xpad\-Task}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf xpad\-::xpad\-Task} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classxpad_a62ee75efbfe797257aaee305fd34d9e4}
+
+
+\-Main xpad \-Thread. 
+
+\-This thread controls handling of slow events -\/ erase, acquire, change mode 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{classxpad_a368f42021436284673610b452e0b1d86}{\index{xpad@{xpad}!abort\-Event\-Id@{abort\-Event\-Id}}
+\index{abort\-Event\-Id@{abort\-Event\-Id}!xpad@{xpad}}
+\subsubsection[{abort\-Event\-Id}]{\setlength{\rightskip}{0pt plus 5cm}epics\-Event\-Id {\bf xpad\-::abort\-Event\-Id}}}\label{classxpad_a368f42021436284673610b452e0b1d86}
+\hypertarget{classxpad_af7d78280f3004beb8930b19bba9a206f}{\index{xpad@{xpad}!acq\-End\-Time@{acq\-End\-Time}}
+\index{acq\-End\-Time@{acq\-End\-Time}!xpad@{xpad}}
+\subsubsection[{acq\-End\-Time}]{\setlength{\rightskip}{0pt plus 5cm}epics\-Time\-Stamp {\bf xpad\-::acq\-End\-Time}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_af7d78280f3004beb8930b19bba9a206f}
+\hypertarget{classxpad_a9abf8c53880f5277a9c8a62074a3709a}{\index{xpad@{xpad}!acq\-Start\-Time@{acq\-Start\-Time}}
+\index{acq\-Start\-Time@{acq\-Start\-Time}!xpad@{xpad}}
+\subsubsection[{acq\-Start\-Time}]{\setlength{\rightskip}{0pt plus 5cm}epics\-Time\-Stamp {\bf xpad\-::acq\-Start\-Time}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a9abf8c53880f5277a9c8a62074a3709a}
+\hypertarget{classxpad_a421021783f2a42b2006d47747670b90a}{\index{xpad@{xpad}!emptystr@{emptystr}}
+\index{emptystr@{emptystr}!xpad@{xpad}}
+\subsubsection[{emptystr}]{\setlength{\rightskip}{0pt plus 5cm}char {\bf xpad\-::emptystr}\mbox{[}128\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a421021783f2a42b2006d47747670b90a}
+\hypertarget{classxpad_a2df91f1005b18ed37258aa15b667f6d3}{\index{xpad@{xpad}!from\-Server@{from\-Server}}
+\index{from\-Server@{from\-Server}!xpad@{xpad}}
+\subsubsection[{from\-Server}]{\setlength{\rightskip}{0pt plus 5cm}char {\bf xpad\-::from\-Server}\mbox{[}4096\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a2df91f1005b18ed37258aa15b667f6d3}
+\hypertarget{classxpad_a7b04fa77731f4940fe6de23021e23105}{\index{xpad@{xpad}!mode@{mode}}
+\index{mode@{mode}!xpad@{xpad}}
+\subsubsection[{mode}]{\setlength{\rightskip}{0pt plus 5cm}{\bf xpad\-\_\-mode} {\bf xpad\-::mode}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a7b04fa77731f4940fe6de23021e23105}
+\hypertarget{classxpad_af165532e4b31b84e3efec3d2b1052727}{\index{xpad@{xpad}!pasyn\-User\-Server@{pasyn\-User\-Server}}
+\index{pasyn\-User\-Server@{pasyn\-User\-Server}!xpad@{xpad}}
+\subsubsection[{pasyn\-User\-Server}]{\setlength{\rightskip}{0pt plus 5cm}asyn\-User$\ast$ {\bf xpad\-::pasyn\-User\-Server}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_af165532e4b31b84e3efec3d2b1052727}
+\hypertarget{classxpad_afd5a1434a37a88e59c50cd4efcd807af}{\index{xpad@{xpad}!p\-Data@{p\-Data}}
+\index{p\-Data@{p\-Data}!xpad@{xpad}}
+\subsubsection[{p\-Data}]{\setlength{\rightskip}{0pt plus 5cm}\-N\-D\-Array$\ast$ {\bf xpad\-::p\-Data}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_afd5a1434a37a88e59c50cd4efcd807af}
+\hypertarget{classxpad_a6429424bf4137e8f3e9896c67721a1db}{\index{xpad@{xpad}!ready@{ready}}
+\index{ready@{ready}!xpad@{xpad}}
+\subsubsection[{ready}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf xpad\-::ready}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a6429424bf4137e8f3e9896c67721a1db}
+\hypertarget{classxpad_a965f7dd05153aa6d99ba9a3a8e0e9db8}{\index{xpad@{xpad}!server\-Port@{server\-Port}}
+\index{server\-Port@{server\-Port}!xpad@{xpad}}
+\subsubsection[{server\-Port}]{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ {\bf xpad\-::server\-Port}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_a965f7dd05153aa6d99ba9a3a8e0e9db8}
+\hypertarget{classxpad_aca4efe99abea333e025cc2aec3350c17}{\index{xpad@{xpad}!start\-Event\-Id@{start\-Event\-Id}}
+\index{start\-Event\-Id@{start\-Event\-Id}!xpad@{xpad}}
+\subsubsection[{start\-Event\-Id}]{\setlength{\rightskip}{0pt plus 5cm}epics\-Event\-Id {\bf xpad\-::start\-Event\-Id}}}\label{classxpad_aca4efe99abea333e025cc2aec3350c17}
+\-Should be private but accessed from \-C, must be public \hypertarget{classxpad_a835f854ed3b92d3bc8eb4e2b1014c43c}{\index{xpad@{xpad}!stop\-Event\-Id@{stop\-Event\-Id}}
+\index{stop\-Event\-Id@{stop\-Event\-Id}!xpad@{xpad}}
+\subsubsection[{stop\-Event\-Id}]{\setlength{\rightskip}{0pt plus 5cm}epics\-Event\-Id {\bf xpad\-::stop\-Event\-Id}}}\label{classxpad_a835f854ed3b92d3bc8eb4e2b1014c43c}
+\hypertarget{classxpad_ac3aa333c231dc3f8a811a2301a3db32c}{\index{xpad@{xpad}!timer\-Id@{timer\-Id}}
+\index{timer\-Id@{timer\-Id}!xpad@{xpad}}
+\subsubsection[{timer\-Id}]{\setlength{\rightskip}{0pt plus 5cm}epics\-Timer\-Id {\bf xpad\-::timer\-Id}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_ac3aa333c231dc3f8a811a2301a3db32c}
+\hypertarget{classxpad_add9855faa308738d97cfc8cae9c29831}{\index{xpad@{xpad}!to\-Server@{to\-Server}}
+\index{to\-Server@{to\-Server}!xpad@{xpad}}
+\subsubsection[{to\-Server}]{\setlength{\rightskip}{0pt plus 5cm}char {\bf xpad\-::to\-Server}\mbox{[}256\mbox{]}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classxpad_add9855faa308738d97cfc8cae9c29831}
+\hypertarget{classxpad_ab7be2bf57518fbcac8f93f572f20ae4f}{\index{xpad@{xpad}!xpad\-\_\-acq\-\_\-mode@{xpad\-\_\-acq\-\_\-mode}}
+\index{xpad\-\_\-acq\-\_\-mode@{xpad\-\_\-acq\-\_\-mode}!xpad@{xpad}}
+\subsubsection[{xpad\-\_\-acq\-\_\-mode}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-\_\-acq\-\_\-mode}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_ab7be2bf57518fbcac8f93f572f20ae4f}
+\hypertarget{classxpad_a6883444a239704d1d808b241156babd2}{\index{xpad@{xpad}!xpad\-\_\-flat\-\_\-field@{xpad\-\_\-flat\-\_\-field}}
+\index{xpad\-\_\-flat\-\_\-field@{xpad\-\_\-flat\-\_\-field}!xpad@{xpad}}
+\subsubsection[{xpad\-\_\-flat\-\_\-field}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-\_\-flat\-\_\-field}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_a6883444a239704d1d808b241156babd2}
+
+
+\-Toggle flat field correction\-: default 0. 
+
+\hypertarget{classxpad_a82a425b4a530240f19a9cb4d2c3795d2}{\index{xpad@{xpad}!xpad\-\_\-geo\-\_\-correction@{xpad\-\_\-geo\-\_\-correction}}
+\index{xpad\-\_\-geo\-\_\-correction@{xpad\-\_\-geo\-\_\-correction}!xpad@{xpad}}
+\subsubsection[{xpad\-\_\-geo\-\_\-correction}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-\_\-geo\-\_\-correction}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_a82a425b4a530240f19a9cb4d2c3795d2}
+
+
+\-Toggle geometrical correction\-: default 0. 
+
+\hypertarget{classxpad_ac6cc32ae27434cafb507aeaa21d05a86}{\index{xpad@{xpad}!xpad\-\_\-img\-\_\-transfer@{xpad\-\_\-img\-\_\-transfer}}
+\index{xpad\-\_\-img\-\_\-transfer@{xpad\-\_\-img\-\_\-transfer}!xpad@{xpad}}
+\subsubsection[{xpad\-\_\-img\-\_\-transfer}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-\_\-img\-\_\-transfer}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_ac6cc32ae27434cafb507aeaa21d05a86}
+
+
+image transfer flag 
+
+\-At the end of exposure if set to true the images will be send in binary via tcp if set to 0 they will be saved in \char`\"{}output server filepath\char`\"{} \hypertarget{classxpad_a8f65d3ade5862e87afbe681372e7ab17}{\index{xpad@{xpad}!xpad\-\_\-input@{xpad\-\_\-input}}
+\index{xpad\-\_\-input@{xpad\-\_\-input}!xpad@{xpad}}
+\subsubsection[{xpad\-\_\-input}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-\_\-input}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_a8f65d3ade5862e87afbe681372e7ab17}
+
+
+often called triggers 
+
+\hypertarget{classxpad_aff6cab8fd160aa9e9c1dbd4a2cb45fe6}{\index{xpad@{xpad}!xpad\-\_\-output@{xpad\-\_\-output}}
+\index{xpad\-\_\-output@{xpad\-\_\-output}!xpad@{xpad}}
+\subsubsection[{xpad\-\_\-output}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-\_\-output}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_aff6cab8fd160aa9e9c1dbd4a2cb45fe6}
+\hypertarget{classxpad_ae0a204dd249083d430c3df4f409f0904}{\index{xpad@{xpad}!xpad\-Abort@{xpad\-Abort}}
+\index{xpad\-Abort@{xpad\-Abort}!xpad@{xpad}}
+\subsubsection[{xpad\-Abort}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-Abort}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_ae0a204dd249083d430c3df4f409f0904}
+\hypertarget{classxpad_a55cbc1f3e75d5cd322863fb3c00f027c}{\index{xpad@{xpad}!xpad\-Change\-Mode@{xpad\-Change\-Mode}}
+\index{xpad\-Change\-Mode@{xpad\-Change\-Mode}!xpad@{xpad}}
+\subsubsection[{xpad\-Change\-Mode}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf xpad\-::xpad\-Change\-Mode}\hspace{0.3cm}{\ttfamily  \mbox{[}protected\mbox{]}}}}\label{classxpad_a55cbc1f3e75d5cd322863fb3c00f027c}
+
+
+\-The documentation for this class was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{xpad_8cpp}{xpad.\-cpp}\end{DoxyCompactItemize}

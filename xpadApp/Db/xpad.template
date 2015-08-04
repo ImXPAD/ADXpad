@@ -1,0 +1,472 @@
+# Database for the records specific to the XPAD driver
+# Nicolas Delrio based on Mark Rivers' work
+# June 19 2015
+
+include "ADBase.template"
+include "NDFile.template"
+
+######################################
+#Filepaths and Filenames             #
+######################################
+
+#calib filepath
+record(waveform, "$(P)$(R)Filepath")
+{
+	field(DESC,"Calibration file path")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_FILEPATH")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
+}
+#not really a path but a file name
+record(waveform, "$(P)$(R)Whitepath")
+{
+	field(DESC,"white image file name")
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_WHITEPATH")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
+}
+record(waveform, "$(P)$(R)Filepath_RBV")
+{
+	field(DESC,"Calibration file path")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_FILEPATH")
+    field(FTVL, "CHAR")
+    field(NELM, "256")	
+    field(SCAN,"I/O Intr")
+}
+record(waveform, "$(P)$(R)Whitepath_RBV")
+{
+	field(DESC,"white image file name")
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_WHITEPATH")
+    field(FTVL, "CHAR")
+    field(NELM, "256")	
+    field(SCAN,"I/O Intr")
+}
+
+#part of exposure parameters
+record(waveform, "$(P)$(R)OutPath")
+{
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_SERVER_FILEPATH")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    info(autosaveFields, "VAL")
+}
+
+
+
+
+######################################
+#Exposure parameters                 #
+######################################
+record(waveform, "$(P)$(R)OutPath_RBV")
+{
+    field(DTYP, "asynOctetRead")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_SERVER_FILEPATH")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    field(SCAN, "I/O Intr")
+}
+record(mbbo, "$(P)$(R)OutputSignal")
+{
+   field(OUT,"@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_SIGNAL")
+   field(DTYP, "asynInt32")
+
+   field(DESC,"Output Signal")
+   field(ZRST, "Exposure Busy")
+   field(ZRVL, "0")
+   field(ONST, "Shutter Busy")
+   field(ONVL, "1")
+   field(TWST, "Busy update overflow")
+   field(TWVL, "2")
+   field(THST, "Pixel counter enabled")
+   field(THVL, "3")
+   field(FRST, "External Gate")
+   field(FRVL, "4")
+   field(FVST, "Exposure read done")
+   field(FVVL, "5")
+   field(SXST, "Data Transfer")
+   field(SXVL, "6")
+   field(SVST, "RAM ready image busy")
+   field(SVVL, "7")
+   field(EIST, "XPAD to local-DDR")
+   field(EIVL, "8")
+   field(NIST, "Local DDR to PC")
+   field(NIVL, "9")
+}
+
+record(mbbi, "$(P)$(R)OutputSignal_RBV")
+{	
+   field(DESC,"Output Signal")
+   field(INP,"@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_SIGNAL")
+   field(DTYP, "asynInt32")
+
+   field(ZRST, "Exposure Busy")
+   field(ZRVL, "0")
+   field(ONST, "Shutter Busy")
+   field(ONVL, "1")
+   field(TWST, "Busy update overflow")
+   field(TWVL, "2")
+   field(THST, "Pixel counter enabled")
+   field(THVL, "3")
+   field(FRST, "External Gate")
+   field(FRVL, "4")
+   field(FVST, "Exposure read done")
+   field(FVVL, "5")
+   field(SXST, "Data Transfer")
+   field(SXVL, "6")
+   field(SVST, "RAM ready image busy")
+   field(SVVL, "7")
+   field(EIST, "XPAD to local-DDR")
+   field(EIVL, "8")
+   field(NIST, "Local DDR to PC")
+   field(NIVL, "9")
+   field(SCAN, "I/O Intr")
+}
+record(mbbo, "$(P)$(R)AcqMode")
+{
+   field(DTYP, "asynInt32")
+
+   field(OUT,"@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_ACQUISITION_MODE")
+   field(DESC,"Acquisition Mode")
+   field(ZRST, "Standard")
+   field(ZRVL, "0")
+   field(ONST, "Detector Burst")
+   field(ONVL, "1")
+   field(TWST, "Computer Burst")
+   field(TWVL, "2")
+   field(THST, "Stacking 16Bits")
+   field(THVL, "3")
+   field(FRST, "Stacking 32Bits")
+   field(FRVL, "4")
+   field(FVST, "Single Bunch 16Bits")
+   field(FVVL, "5")
+   field(SXST, "Single Bunch 32Bits")
+   field(SXVL, "6")
+
+}
+
+record(mbbi, "$(P)$(R)AcqMode_RBV")
+{	
+   field(INP,"@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_ACQUISITION_MODE")
+   field(DTYP, "asynInt32")
+
+   field(ZRST, "Standard")
+   field(ZRVL, "0")
+   field(ONST, "Detector Burst")
+   field(ONVL, "1")
+   field(TWST, "Computer Burst")
+   field(TWVL, "2")
+   field(THST, "Stacking 16Bits")
+   field(THVL, "3")
+   field(FRST, "Stacking 32Bits")
+   field(FRVL, "4")
+   field(FVST, "Single Bunch 16Bits")
+   field(FVVL, "5")
+   field(SXST, "Single Bunch 32Bits")
+   field(SXVL, "6")
+   field(SCAN, "I/O Intr")
+}
+
+#Redefined from ADBase template to see all of the fields take a look to ADBase.template in ADCore dir
+record(mbbo, "$(P)$(R)TriggerMode")
+{
+   field(DESC,"Input Signal")
+   field(ZRST, "Internal")
+   field(ZRVL, "0")
+   field(ONST, "External Gate")
+   field(ONVL, "1")
+   field(TWST, "External Multiple")
+   field(TWVL, "2")
+   field(THST, "External Single")
+   field(THVL, "3")
+}
+record(mbbi, "$(P)$(R)TriggerMode_RBV")
+{	
+   field(DESC,"Input Signal")
+   field(ZRST, "Internal")
+   field(ZRVL, "0")
+   field(ONST, "External")
+   field(ONVL, "1")
+   field(TWST, "Internal with trigger1")
+   field(TWVL, "2")
+   field(THST, "Internal with trigger2")
+   field(THVL, "3")
+   field(SCAN, "I/O Intr")
+}
+record(mbbo, "$(P)$(R)OutputFormat")
+{
+   field(PINI, "YES")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_FORMAT")
+   field(ZRST, "Binary")
+   field(ZRVL, "0")
+   field(ONST, "Ascii")
+   field(ONVL, "1")
+}
+record(mbbi, "$(P)$(R)OutputFormat_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_FORMAT")
+   field(ZRST, "Binary")
+   field(ZRVL, "0")
+   field(ONST, "Ascii")
+   field(ONVL, "1")
+   field(SCAN, "I/O Intr")
+}
+record(ao, "$(P)$(R)OverflowTime")
+{
+   field(PINI, "YES")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OVERFLOW_TIME")
+   field(PREC, "3")
+   field(VAL,  "4000")
+   info(autosaveFields, "VAL")
+}
+
+record(ai, "$(P)$(R)OverflowTime_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OVERFLOW_TIME")
+   field(PREC, "3")
+   field(SCAN, "I/O Intr")
+}
+record(bo, "$(P)$(R)GeoCor")
+{
+   field(PINI, "NO")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_GEOMETRICAL_CORRECTION_FLAG")
+   field(ZNAM, "No")
+   field(ONAM, "Yes")
+   field(VAL,  "0")
+   info(autosaveFields, "VAL")
+}
+
+record(bi, "$(P)$(R)GeoCor_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_GEOMETRICAL_CORRECTION_FLAG")
+   field(ZNAM, "No")
+   field(ONAM, "Yes")
+   field(SCAN, "I/O Intr")
+}
+record(bo, "$(P)$(R)FlatField")
+{
+   field(PINI, "NO")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_FLAT_FIELD_CORRECTION_FLAG")
+   field(ZNAM, "No")
+   field(ONAM, "Yes")
+   field(VAL,  "0")
+   info(autosaveFields, "VAL")
+}
+
+record(bi, "$(P)$(R)FlatField_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_FLAT_FIELD_CORRECTION_FLAG")
+   field(ZNAM, "No")
+   field(ONAM, "Yes")
+   field(SCAN, "I/O Intr")
+}
+record(bo, "$(P)$(R)ImageTrans")
+{
+   field(PINI, "YES")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_IMAGE_TRANSFER_FLAG")
+   field(ZNAM, "No")
+   field(ONAM, "Yes")
+   field(VAL,  "0")
+   info(autosaveFields, "VAL")
+}
+
+record(bi, "$(P)$(R)ImageTrans_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_IMAGE_TRANSFER_FLAG")
+   field(ZNAM, "No")
+   field(ONAM, "Yes")
+   field(SCAN, "I/O Intr")
+}
+record(longout, "$(P)$(R)StackSize")
+{
+   field(PINI, "YES")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_STACKSIZE")
+   field(VAL,  "1")
+   info(autosaveFields, "VAL")
+}
+
+record(longin, "$(P)$(R)StackSize_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_STACKSIZE")
+   field(SCAN, "I/O Intr")
+}
+
+
+######################################
+#Activators                          #
+######################################
+
+
+#######White Image and Calibration############
+record(busy, "$(P)$(R)WhiteImage") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_WHITE_IMAGE_ACTIVATOR")
+   field(ZNAM, "Ok")
+   field(ONAM, "Generating White Image")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)ChoseWhiteImage") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_CHOSE_WHITE")
+   field(ZNAM, "Ok")
+   field(ONAM, "CHOSE CURRENT WHITEPATH")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)ListWhiteImage") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SHOW_WHITE")
+   field(ZNAM, "Ok")
+   field(ONAM, "LIST OF WHITE IMAGES IN SERVER")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)LoadCalib") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_LOAD_CALIB")
+   field(ZNAM, "Done")
+   field(ONAM, "LoadCalib")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)SaveCalib") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SAVE_CALIB")
+   field(ZNAM, "Done")
+   field(ONAM, "SaveCalib")
+   field(VAL,  "0")
+}
+#######Server prompt utilities############
+record(busy, "$(P)$(R)SendServer") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SEND_TOSERVER")
+   field(ZNAM, "Ok")
+   field(ONAM, "Sending \"toServer\" to server")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)ReadServer") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_READ_FROMSERVER")
+   field(ZNAM, "Ok")
+   field(ONAM, "Read server and save to fromServer")
+   field(VAL,  "0")
+}
+
+########"Emergency" Functions#########
+record(busy, "$(P)$(R)ResetDetector") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_RESET")
+   field(ZNAM, "Done")
+   field(ONAM, "ResetDetector")
+   field(VAL,  "0")
+}
+
+record(bo,"$(P)$(R)Abort") {
+    field(DTYP,"asynInt32")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_ABORT")
+    field(ZNAM,"Done")
+    field(ONAM,"Abort")
+    field(VAL, "1")
+}
+
+record(bi,"$(P)$(R)Abort_RBV") {
+    field(DTYP,"asynInt32")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_ABORT")
+    field(ZNAM,"Done")
+    field(ZSV, "NO_ALARM")
+    field(ONAM,"Aborting")
+    field(OSV, "MINOR")
+    field(SCAN, "I/O Intr")
+}
+record(busy,"$(P)$(R)ChangeMode") {
+    field(DTYP,"asynInt32")
+    field(PINI, "YES")
+    field(VAL, "1")
+    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_CHANGE_MODE")
+    field(ZNAM,"Done")
+    field(ONAM,"Change")
+}
+
+record(bi,"$(P)$(R)ChangeMode_RBV") {
+    field(DTYP,"asynInt32")
+    field(INP, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_CHANGE_MODE")
+    field(ZNAM,"Done")
+    field(ZSV, "NO_ALARM")
+    field(ONAM,"Changing")
+    field(OSV, "MINOR")
+    field(SCAN, "I/O Intr")
+}
+
+
+
+
+######################################
+#Network                             #
+######################################
+
+# asyn record for interactive communication with XpadXXXServer
+record(asyn, "$(P)$(R)XpadXXXServerAsyn")
+{
+    field(PORT,  "$(XPADXXXSERVER_PORT)")
+    field(IMAX, "64")
+    field(OMAX, "64")
+}
+record(waveform, "$(P)$(R)StringToServer")
+{
+    field(DTYP, "asynOctetWrite")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STRING_TO_SERVER")
+    field(FTVL, "CHAR")
+    field(NELM, "256")
+    field(SCAN, "I/O Intr")
+}
+
+
+######################################
+#States machine                      #
+######################################
+# We replace the states for DetectorState_RBV
+record(mbbi, "$(P)$(R)DetectorState_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STATUS")
+    field(ZRST, "Idle")
+    field(ZRVL, "0")
+    field(ZRSV, "NO_ALARM")
+    field(ONST, "Exposing")
+    field(ONVL, "1")
+    field(ONSV, "MINOR")
+    field(TWST, "Scanning")
+    field(TWVL, "2")
+    field(TWSV, "MINOR")
+    field(THST, "Erasing")
+    field(THVL, "3")
+    field(THSV, "MINOR")
+    field(FRST, "Changing mode")
+    field(FRVL, "4")
+    field(FRSV, "MINOR")
+    field(FVST, "Aborting")
+    field(FVVL, "5")
+    field(FVSV, "MINOR")
+    field(SXST, "Error")
+    field(SXVL, "6")
+    field(SXSV, "MAJOR")
+    field(SVST, "Waiting")
+    field(SVVL, "7")
+    field(SVSV, "MINOR")
+    field(SCAN, "I/O Intr")
+}
