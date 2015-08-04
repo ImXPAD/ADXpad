@@ -24,7 +24,7 @@ epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
 ###
 # Create the asyn port to talk to the XpadXXXServer on default port 3456
 
-drvAsynIPPortConfigure("XpadXXXServer","192.168.1.23:3456")
+drvAsynIPPortConfigure("XpadXXXServer","192.168.1.12:3456")
 # Set the input and output terminators.
 asynOctetSetInputEos("XpadXXXServer", 0, "\n")
 asynOctetSetOutputEos("XpadXXXServer", 0, "\n")
@@ -33,7 +33,7 @@ asynSetTraceIOMask("XpadXXXServer",0,2)
 
 
 
-drvAsynIPPortConfigure("XpadAbort","192.168.1.23:3456")
+drvAsynIPPortConfigure("XpadAbort","192.168.1.12:3456")
 asynOctetSetInputEos("XpadAbort", 1, "\n")
 asynOctetSetOutputEos("XpadAbort", 1, "\n")
 asynSetTraceIOMask("XpadAbort",1,2)
