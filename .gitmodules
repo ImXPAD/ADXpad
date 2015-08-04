@@ -1,0 +1,3 @@
+[submodule "ADXpad"]
+	path = ADXpad
+	url = https://github.com/areaDetector/ADXpad.git
