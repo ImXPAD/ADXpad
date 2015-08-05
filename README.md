@@ -6,6 +6,7 @@ An
 driver for the detectors from 
 [ImXPad](http://http://www.imxpad.com/).
 
+STATE : stable
 Additional information:
 * [Documentation](http://80.15.49.71/Xpad_areaDetector_Driver.html).
 * [Exemple: Get your first serie of images] (http://80.15.49.71/epics/SaveToTiff.html)
