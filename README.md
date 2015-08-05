@@ -7,5 +7,5 @@ driver for the detectors from
 [ImXPad](http://http://www.imxpad.com/).
 
 Additional information:
-* [Documentation](#).
-* [Release notes and links to source and binary releases](RELEASE.md).
+* [Documentation](https://github.com/oirled/ADXpad/tree/master/documentation).
+* [Release notes and links to source and binary releases (will be active the day of first release)](#).
