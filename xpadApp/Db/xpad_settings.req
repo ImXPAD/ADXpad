@@ -1,5 +1,16 @@
 file "ADBase_settings.req", P=$(P), R=$(R)
 file "NDFile_settings.req", P=$(P), R=$(R)
+$(P)$(R)Filepath
+$(P)$(R)Whitepath
+$(P)$(R)OutPath
+$(P)$(R)OutputSignal
+$(P)$(R)AcqMode
+$(P)$(R)TriggerMode
+$(P)$(R)OutputFormat
+$(P)$(R)OverflowTime
+$(P)$(R)GeoCor
+$(P)$(R)FlatField
+$(P)$(R)ImageTrans
+$(P)$(R)StackSize
 
-$(P)$(R)ScanSize
-$(P)$(R)ScanResolution
+

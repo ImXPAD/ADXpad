@@ -49,9 +49,9 @@
 #include <epicsMutex.h>
 #include <cantProceed.h>
 #include <iocsh.h>
-#include <epicsExport.h>
 #include <asynOctetSyncIO.h>
 #include <asynOctet.h>
+#include <epicsExport.h>
 
 
 
@@ -59,12 +59,12 @@
 
 
 #define MAX_MESSAGE_SIZE 256
-#define MAX_OCT_BUFF_SIZE 4096
+#define MAX_OCT_BUFF_SIZE 256
 #define MAX_FILENAME_LEN 256
 #define XPAD_SOCKET_TIMEOUT 1.0
 #define XPAD_COMMAND_TIMEOUT 30.0
 #define XPAD_POLL_DELAY .02
-#define MAX_RETURN_SIZE 15000
+#define MAX_RETURN_SIZE 256
 ///NON NUL
 #define XPAD_SUPP_DELAY 10 
 
@@ -226,7 +226,6 @@ protected:
    /** At the end of exposure if set to true the images will be send in binary via tcp
      *  if set to 0 they will be saved in "output server filepath" */
     int xpad_img_transfer;
-    //TODO: ADD OUTPUT FORMAT FILE AND OVERFLOW TIME
     ///Output signal
     int xpad_output;
     int xpad_overflow;
@@ -305,10 +304,10 @@ asynStatus xpad::getImageStream()
 
 	getIntegerParam(ADTriggerMode,&trigger);
 	timeout=1.06*eval+XPAD_SUPP_DELAY+1;
-	if(trigger!=IS_internal)asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "%s%s:WARNING: trigger enabled, the driver will wait forever if the image is not sent. \n",driverName,functionName);
+	if(trigger!=IS_internal)asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s%s:WARNING: trigger enabled, the driver will wait forever if the image is not sent. \n",driverName,functionName);
 
 
-	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s%s:gonna writeread with %lf s timeout \n",driverName,functionName,timeout);
+	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s:gonna writeread with %lf s timeout \n",driverName,functionName,timeout);
 	setStringParam(ADStringToServer,toServer);
 	setIntegerParam(ADStatus,xpadStatusExpose);
 	callParamCallbacks();
@@ -328,12 +327,12 @@ lock();
 	 
 	 
 	 if(eomReason==2){// eomReason="\r"(=0x0a=10) this means the pasynOctetSyncIO interface stopped reading from the server because of a "\r" char so we put back this char because ..well we are not really dealing with chars. a uint32_t version of this function would be much welcome 
-		//asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n eom \n");
+		//asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "\n eom \n");
 		fromServer[nRead_]=(int32_t)10;
 		nRead_++;
 	}
     if(strncmp(">",fromServer,1)==0){
-		asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s%s:  >   recieved, readout shift 2 bytes \n",driverName,functionName);
+		asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s:  >   recieved, readout shift 2 bytes \n",driverName,functionName);
 
 		ival=2;
 		headerLen=14;//14;
@@ -350,7 +349,7 @@ lock();
 	dims[1]=(size_t)((uint8_t)fromServer[ival+7]<<24|(uint8_t)fromServer[ival+6]<<16|(uint8_t)fromServer[ival+5]<<8|(uint8_t)fromServer[ival+4]);
 	dims[0]=(size_t)((uint8_t)fromServer[ival+11]<<24|(uint8_t)fromServer[ival+10]<<16|(uint8_t)fromServer[ival+9]<<8|(uint8_t)fromServer[ival+8]);
 	//dataLen=dims[0]*dims[1]*4;
-	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s%s: Image dimensions  %d*%d \nimagesize:%d \n",driverName,functionName,(int)dims[0],(int)dims[1],dataLen);
+	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s: Image dimensions  %d*%d \nimagesize:%d \n",driverName,functionName,(int)dims[0],(int)dims[1],dataLen);
 	if ((dims[0] <= 0) || (dims[1] <= 0)){	//||dataLen!=(int)(dims[0]*dims[1]*4)){
 		callParamCallbacks();
 		return asynError;
@@ -388,8 +387,8 @@ lock();
 				nRead_++;
 			}
 			if(fromServer[0]==0&&fromServer[1]==0&& fromServer[2]==0&& fromServer[3]==0) {
-				asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: WARNING: empty image, if you didn't abort yourself check the system\n", driverName, functionName);
-				asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:\n eval=%lf\nvalues 1:%d, 2;%d, 3:%d, 4:%d, 5:%d, 6;%d, 7:%d, 8:%d, 9:%d, 10;%d, 11:%d, 12:%d,13:%d \n", driverName, functionName,eval,fromServer[0],fromServer[1],fromServer[2],fromServer[3],fromServer[4],fromServer[5],fromServer[6],fromServer[7],fromServer[8],fromServer[9],fromServer[10],fromServer[11],fromServer[12]);
+				asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: WARNING: empty image, if you didn't abort yourself check the system\n", driverName, functionName);
+				//asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:\n eval=%lf\nvalues 1:%d, 2;%d, 3:%d, 4:%d, 5:%d, 6;%d, 7:%d, 8:%d, 9:%d, 10;%d, 11:%d, 12:%d,13:%d \n", driverName, functionName,eval,fromServer[0],fromServer[1],fromServer[2],fromServer[3],fromServer[4],fromServer[5],fromServer[6],fromServer[7],fromServer[8],fromServer[9],fromServer[10],fromServer[11],fromServer[12]);
 
 				img_rest=1;
 			}
@@ -398,20 +397,18 @@ lock();
 		pIn = fromServer+headerLen;
 		
 		nRead_-=headerLen;
-			asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n\n CHECK 0 nread=%d \n\n",(int)nRead_);
 
 		headerLen=12;//12;
 		if(((int)nRead_)<0){
 			 nRead_=0;
 		 }
 		memcpy(pOut, pIn, nRead_);
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: Recieving image %d (%d remaining) \n",driverName, functionName,imgtot,img_rest-1);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: Recieving image %d (%d remaining) \n",driverName, functionName,imgtot,img_rest-1);
 
 		
 		/** 
 		 * Transfer of the recieved frames in the buffer
 		 */
-	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n\n CHECK 1 \n\n");
 
 	    pOut+= nRead_;
 	    for (nCopied=nRead_; (uint32_t)nCopied<dataLen; nCopied+=(int)nRead_) {
@@ -436,22 +433,20 @@ lock();
 	        memcpy(pOut, pIn, nRead_);
 
 	        pOut+= nRead_;
-	        	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n\n CHECK loop \n\n");
 
 	       
 	    }
 		/**Last parameters (could be compared to metadatas) are then set
 		*/
-			asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n\n CHECK 2 \n\n");
 
-	    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: end of image %d readout\n",driverName, functionName,imgtot);
+	    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: end of image %d readout\n",driverName, functionName,imgtot);
 	    getIntegerParam(NDArrayCounter, &ival);
 	    epicsTimeGetCurrent(&now);
 	    pImage->uniqueId = ival;
 	    pImage->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
 	    updateTimeStamp(&pImage->epicsTS);
 	    this->getAttributes(pImage->pAttributeList);
-	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: calling NDArray callback\n", driverName, functionName);
+	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: calling NDArray callback\n", driverName, functionName);
 	    /** Once complete the buffer is transfered where it is needed */
 	    this->unlock();
 	    doCallbacksGenericPointer(pImage, NDArrayData, 0);
@@ -470,7 +465,7 @@ lock();
 			//}
 			//fclose(fd);
 		//}
-		//else asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "CANNOT OPEN FILE");
+		//else asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "CANNOT OPEN FILE");
 	    img_rest--;
 	    imgtot++;
 		status=pasynOctetSyncIO->write(pasynUser, "R", 2, XPAD_SOCKET_TIMEOUT,&nWrite_);
@@ -541,7 +536,7 @@ asynStatus xpad::saveConfigToFile( const char * fileName){
 
 	saveFile=fopen(fileName_cpy, "w+");
 	if(saveFile==NULL){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR File not found:%s \n \n", driverName, functionName,fileName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR File not found:%s \n \n", driverName, functionName,fileName);
 		return asynError;
 	}
 	asynStatus status=asynSuccess;
@@ -625,7 +620,7 @@ asynStatus xpad::saveConfigToFile( const char * fileName){
 	}
 	ui32val=(uint8_t)fromServer[ival+3]<<24|(uint8_t)fromServer[ival+2]<<16|(uint8_t)fromServer[ival+1]<<8|(uint8_t)fromServer[ival+0];	 
 	if(eomReason==2){// eomReason="\r"(=0x0a=10) this means the pasynOctetSyncIO interface stopped reading from the server because of a "\r" char so we put back this char because ..well we are not really dealing with chars. a uint32_t version of this function would be much welcome 
-		//asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n eom \n");
+		//asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "\n eom \n");
 		fromServer[nRead_]=10;
 		nRead_++;
 	}
@@ -637,7 +632,7 @@ asynStatus xpad::saveConfigToFile( const char * fileName){
 	while(nCopied<ui32val){
 		status=pasynOctetSyncIO->read(pasynUserServer, fromServer, maxRead,XPAD_POLL_DELAY, &nRead_, &eomReason);
 		if(eomReason==2){// eomReason="\r"(=0x0a=10) this means the pasynOctetSyncIO interface stopped reading from the server because of a "\r" char so we put back this char because ..well we are not really dealing with chars. a uint32_t version of this function would be much welcome 
-			//asynPrint(pasynUserSelf, ASYN_TRACE_ERROR, "\n eom \n");
+			//asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "\n eom \n");
 			fromServer[nRead_]=10;
 			nRead_++;
 		}
@@ -667,7 +662,7 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 	uint8_t * buffer=NULL;
 	int ival;
 	bool g_or_l;
-	
+	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s:%s: ENTERED FUNC file:%s\n",  driverName, functionName,fileName);
 	
 	strcpy(fileName_cpy,fileName);
 	ival=strlen(fileName);
@@ -676,7 +671,7 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 	
 	fc=fopen(fileName, "r");
 	if(fc==NULL){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR File not found:%s \n \n", driverName, functionName,fileName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR File not found:%s \n \n", driverName, functionName,fileName);
 		return asynError;
 	}
 	
@@ -694,33 +689,36 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 	buffer[2]=(uint8_t)((fileSize&0b00000000111111110000000000000000)>>16);
 	buffer[1]=(uint8_t)((fileSize&0b00000000000000001111111100000000)>>8);
 	buffer[0]=(uint8_t)(fileSize&0b00000000000000000000000011111111);
-	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s%s:size=%d converted in octets: %2x %2x %2x %2x \n",driverName,functionName,fileSize ,(uint8_t) buffer[0],(uint8_t)  buffer[1], (uint8_t) buffer[2],(uint8_t)  buffer[3]);
+	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s:size=%d converted in octets: %2x %2x %2x %2x \n",driverName,functionName,fileSize ,(uint8_t) buffer[0],(uint8_t)  buffer[1], (uint8_t) buffer[2],(uint8_t)  buffer[3]);
 	
 	//Reading file (might need to be modified in case of decreased MAX MESSAGE SIZE
 	pOut+=4;
 	nSet=fread(pOut,1	,fileSize,fc);
 	pOut-=4;
 	fclose(fc);
-	if(nSet!=fileSize)	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:WARNING: Only %d bytes read in file %s\n\n", driverName, functionName,(int)nSet,fileName_cpy);
+	if(nSet!=fileSize)	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING: Only %d bytes read in file %s\n\n", driverName, functionName,(int)nSet,fileName_cpy);
 
 	//Sending File
 	epicsSnprintf(this->toServer, sizeof(this->toServer),"LoadConfig%cFromFile",(true-g_or_l)*'G'+g_or_l*'L') ;	
 	writeServer(toServer);
 	nSet=0;nWrite=0;
-	while(nSet<filesentsize-1){
+	while(nSet<filesentsize){
 		pasynOctetSyncIO->write(this->pasynUserServer, pOut,filesentsize-nSet, XPAD_SOCKET_TIMEOUT,&nWrite);
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: nWrite: %d nSet:%d\n", driverName, functionName,(int)nWrite,(int) nSet);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: nWrite: %d nSet:%d\n", driverName, functionName,(int)nWrite,(int) nSet);
 		nSet+=nWrite;
 		pOut+=nWrite;
 	}
+	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING: set=%d\nfilesentsize=%d%s\n\n", driverName, functionName,(int)nSet,filesentsize,fileName_cpy);
+
 	free(buffer);
 	
 	//Same with local config 
 	if(!g_or_l){
 		fileName_cpy[ival-1]='l';
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: local filename is :%s\n", driverName, functionName,fileName_cpy);
-		if(loadConfigFromFile(fileName_cpy)==asynError) asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:WARNING:No local configuration has been made \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: local filename is :%s\n", driverName, functionName,fileName_cpy);
+		if(loadConfigFromFile(fileName_cpy)==asynError) asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING:No local configuration has been made \n", driverName, functionName);
 	}
+	epicsEventWaitWithTimeout(abortEventId,10+XPAD_SUPP_DELAY/2);
 	return asynSuccess;
 }
 
@@ -735,7 +733,7 @@ asynStatus xpad::writeServer(const char *output)
     /* Flush any stale input, since the next operation is likely to be a read */
     pasynOctetSyncIO->flush(pasynUser);
     status = pasynOctetSyncIO->write(pasynUser, output,strlen(output), XPAD_SOCKET_TIMEOUT, &nwrite);                                  
-    if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR,  "%s:%s: ERROR writing on server status=%d, sent:%s\n",  driverName, functionName, status, output);
+    if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s:%s: ERROR writing on server status=%d, sent:%s\n",  driverName, functionName, status, output);
 
     /* Set output string so it can get back to EPICS */
     setStringParam(ADStringToServer, output);
@@ -757,7 +755,7 @@ asynStatus xpad::unpackServer(int mode){
  * */
 asynStatus xpad::unpackServer(char* input,char * output,int mode,int param)
 {
-	asynPrint(pasynUserServer, ASYN_TRACE_FLOW,"%s ENTREE DE UNPACKER PARSER avec input=%s\n",driverName,input);
+	asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"%s ENTREE DE UNPACKER PARSER avec input=%s\n",driverName,input);
 	
 	int indstart,indstop;
 	bool turn=true;
@@ -770,13 +768,13 @@ asynStatus xpad::unpackServer(char* input,char * output,int mode,int param)
 			for(int i=0; i<4096;i++){
 				if(input[i]==':'){
 					indstart=i+1;
-						asynPrint(pasynUserServer, ASYN_TRACE_FLOW,"\n\nINDSTART = %d \n",indstart);
+						asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"\n\nINDSTART = %d \n",indstart);
 
 				}
 				if(input[i]==';'){
 					indstop=i;
-					asynPrint(pasynUserServer, ASYN_TRACE_FLOW,"\n\nINDSTOP = %d \n",indstop);
-					asynPrint(pasynUserServer, ASYN_TRACE_FLOW,"\n\nOFFSET = %d \n",offset);
+					asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"\n\nINDSTOP = %d \n",indstop);
+					asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"\n\nOFFSET = %d \n",offset);
 
 					sprintf(charval,"%d ",ival);
 					itemp=strlen(charval);
@@ -804,7 +802,7 @@ asynStatus xpad::unpackServer(char* input,char * output,int mode,int param)
 			}
 		}
 		return asynError;
-		asynPrint(pasynUserServer, ASYN_TRACE_FLOW,"%s: Sortie DE UNPACKER PARSER avec s=%s \n\n",driverName, output);
+		asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"%s: Sortie DE UNPACKER PARSER avec s=%s \n\n",driverName, output);
 	}
 		
 
@@ -849,7 +847,7 @@ asynStatus xpad::readServer(char *input, size_t maxChars, double timeout)
 	}
     lock();
     if (nread == 0) return(status);
-    if (status) asynPrint(pasynUser, ASYN_TRACE_FLOW,"%s:%s: ERROR reading server failed\ntimeout=%f, status=%d received %lu bytes\n%s\n", driverName, functionName, timeout, status, (unsigned long)nread, input);
+    if (status) asynPrint(pasynUser, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"%s:%s: ERROR reading server failed\ntimeout=%f, status=%d received %lu bytes\n%s\n", driverName, functionName, timeout, status, (unsigned long)nread, input);
     /* Set output string so it can get back to EPICS */
     setStringParam(ADStringFromServer, input);
     callParamCallbacks();
@@ -872,7 +870,7 @@ asynStatus xpad::waitForCompletion(const char *doneString,char * resultstr, doub
     epicsTimeStamp start, now;
     int abort;
     const char *functionName = "waitForCompletion";
-   	asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW, "%s:%s  waiting for %s from server\n", driverName, functionName,doneString);
+   	asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s  waiting for %s from server\n", driverName, functionName,doneString);
     epicsTimeGetCurrent(&start);
     while (1) {
 		getIntegerParam(ADStatus, &abort);
@@ -884,10 +882,10 @@ asynStatus xpad::waitForCompletion(const char *doneString,char * resultstr, doub
 							 return(asynSuccess);
 						 }
 			            else if(resultstr[0]=='!'){
-							asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,"%s:%s:  XpadXXXServer sent error:  %s \n", driverName, functionName, resultstr);
+							asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,"%s:%s:  XpadXXXServer sent error:  %s \n", driverName, functionName, resultstr);
 							 return asynError;
 						} else if(resultstr[0]=='#'){
-							asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,"%s:%s:  XpadXXXServer sent Warning:  %s \n", driverName, functionName, resultstr);
+							asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,"%s:%s:  XpadXXXServer sent Warning:  %s \n", driverName, functionName, resultstr);
 							 return asynError;
 						}
 						//else if(resultstr[0]=='*' && strcmp(resultstr,"* -1")!=false){
@@ -899,7 +897,7 @@ asynStatus xpad::waitForCompletion(const char *doneString,char * resultstr, doub
         }
         epicsTimeGetCurrent(&now);
         elapsedTime = epicsTimeDiffInSeconds(&now, &start);
-        if (elapsedTime > timeout) { asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR,"%s:%s: error waiting for response from XpadXXXServer\n",driverName, functionName);
+        if (elapsedTime > timeout) { asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,"%s:%s: error waiting for response from XpadXXXServer\n",driverName, functionName);
             return(asynError);
         }
     }
@@ -926,10 +924,10 @@ asynStatus xpad::xpadInit()
 	if(ready==false){
 		epicsSnprintf(this->toServer, sizeof(this->toServer), "Init");
 	    writeServer(this->toServer);	
-	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW, "%s:%s:XPad is initializing\n",driverName,functionName);
+	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPad is initializing\n",driverName,functionName);
 	    status= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
 	    if(status) { 
-		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR, "%s:%s: XpadXXXServer failed Init, Try again \n",driverName,functionName);
+		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer failed Init, Try again \n",driverName,functionName);
 		   ready=false;
 		   return status;	    
 			}
@@ -947,10 +945,10 @@ asynStatus xpad::xpadInit()
 	}else {
 		epicsSnprintf(this->toServer, sizeof(this->toServer), "AskReady");
 	    writeServer(this->toServer);	
-	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW, "%s:%s:XPAD is already initialized, Ask Ready \n. ",driverName,functionName);
+	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPAD is already initialized, Ask Ready \n. ",driverName,functionName);
 	    status= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
 	    if(status==asynError) { 
-		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR, "%s:%s: XpadXXXServer failed Init, Try again \n ",driverName,functionName);
+		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer failed Init, Try again \n ",driverName,functionName);
 		   ready=false;
 		  	    
 		}
@@ -982,7 +980,7 @@ asynStatus xpad::setExposureParameters() {
 	status=xpadInit();
 	if(status)return status;
 	
-//	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "=============Exposure parameters setting============================\n.\n.");
+//	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "=============Exposure parameters setting============================\n.\n.");
 
 	
 	/**The core of this function mainly control the values of every exposure parameters and reset them in case of bad values
@@ -993,7 +991,7 @@ asynStatus xpad::setExposureParameters() {
 	 /** Acquisiton mode*/
 	status=getIntegerParam(xpad_acq_mode,& acqumode);
 	if(status!=asynSuccess ||  acqumode<0 ||  acqumode>6){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR Could not set ascquisition mode, Reset to DEFAULT: Standard\n ", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set ascquisition mode, Reset to DEFAULT: Standard\n ", driverName, functionName);
 		 acqumode=AM_standard;
 		setIntegerParam(xpad_acq_mode, acqumode);
 	}
@@ -1001,7 +999,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Geometrical correction flag*/
 	status=getIntegerParam(xpad_geo_correction,& geocor);
 	if(status!=asynSuccess ||  geocor<0 ||  geocor>1){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR Could not set geometrical correction flag, Reset to DEFAULT: false (no correction) \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set geometrical correction flag, Reset to DEFAULT: false (no correction) \n", driverName, functionName);
 		 geocor=0;
 		setIntegerParam(xpad_geo_correction, geocor);
 	}
@@ -1009,7 +1007,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Flat field correction flag*/
 	status=getIntegerParam(xpad_flat_field,& flatfcor);
 	if(status!=asynSuccess ||  flatfcor<0 ||  flatfcor>1){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR Could not set flat field enable flag, Reset to DEFAULT: false (no correction)\n ", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set flat field enable flag, Reset to DEFAULT: false (no correction)\n ", driverName, functionName);
 		 flatfcor=1;
 		setIntegerParam(xpad_flat_field, flatfcor);
 	}
@@ -1017,7 +1015,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Image transfer flag */
 	status=getIntegerParam(xpad_img_transfer,& imgtrans);
 	if(status!=asynSuccess ||  imgtrans<0 ||  imgtrans>1){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR Could not set image transfer flag, Reset to DEFAULT: True (streaming bitmap on network right after the end of acquisition) \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set image transfer flag, Reset to DEFAULT: True (streaming bitmap on network right after the end of acquisition) \n", driverName, functionName);
 		 imgtrans=1;
 		setIntegerParam(xpad_img_transfer, imgtrans);
 	}
@@ -1025,7 +1023,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Input signals  (trigger modes)*/
 	status=getIntegerParam(ADTriggerMode,& input);
 	if(status!=asynSuccess ||  input<0 ||  input>3){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR Could not set input signal, Reset to DEFAULT: Internal \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set input signal, Reset to DEFAULT: Internal \n", driverName, functionName);
 		 input=IS_internal;
 		setIntegerParam(ADTriggerMode, input);
 	}
@@ -1033,7 +1031,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Output signal */
 	status=getIntegerParam(xpad_output,&output);
 	if(status!=asynSuccess ||  output<0 ||  output>9){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s:ERROR: Could not set output signal, Reset to DEFAULT: Exposure busy\n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR: Could not set output signal, Reset to DEFAULT: Exposure busy\n", driverName, functionName);
 		 output=OS_shutter_busy;
 		setIntegerParam(xpad_output, output);
 	}
@@ -1041,11 +1039,11 @@ asynStatus xpad::setExposureParameters() {
 	/** Number of Images */
 	status=getIntegerParam(ADNumImages,& numimg);
 	if(status!=asynSuccess ||  numimg<1){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: ERROR: number of images must be greater that 1, Reset to DEFAULT: 1 \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: number of images must be greater that 1, Reset to DEFAULT: 1 \n", driverName, functionName);
 		 numimg=1;
 		setIntegerParam(ADNumImages, numimg);
 	}else if(numimg>65535){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: Warning: Number of images is greater than 16Bit maximum integer value, the detector will not take the %d images \n", driverName, functionName,numimg);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: Warning: Number of images is greater than 16Bit maximum integer value, the detector will not take the %d images \n", driverName, functionName,numimg);
 		numimg=15000;
 	}
 	if(numimg>1)    setIntegerParam(ADImageMode, ADImageMultiple);
@@ -1054,12 +1052,12 @@ asynStatus xpad::setExposureParameters() {
 	/** Exposure Time */
 	status=getDoubleParam(ADAcquireTime,& exptime);
 	if(status!=asynSuccess ||  exptime<0.000001){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: ERROR: exposure time must be a positive value  min= 1µs, Reset to DEFAULT: 1 second\n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: exposure time must be a positive value  min= 1µs, Reset to DEFAULT: 1 second\n", driverName, functionName);
 		 exptime=1.;
 		setDoubleParam(ADAcquireTime, exptime);
 	}
 	if(exptime>4294.967295){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: ERROR: Out of 32bits uint range, reset close to max value\n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: Out of 32bits uint range, reset close to max value\n", driverName, functionName);
 		 exptime=4294.967280;
 		setDoubleParam(ADAcquireTime, exptime);
 	}
@@ -1068,7 +1066,7 @@ asynStatus xpad::setExposureParameters() {
 	/** Time between images*/
 	status=getDoubleParam(ADAcquirePeriod,& waittime);
 	if(status!=asynSuccess ||  waittime<=0.000001 ||exptime>waittime){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: ERROR: time between images must be a positiv value min=1µs\n adaquireperiod must be greater than AdacquireTime , Reset to DEFAULT: time between images 15 ms\n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: time between images must be a positive value min=1µs\n adaquireperiod must be greater than AcquireTime , Reset to DEFAULT: time between images 15 ms\n", driverName, functionName);
 		 waittime=0.015+ exptime;
 		setDoubleParam(ADAcquirePeriod, waittime);
 	}
@@ -1076,7 +1074,7 @@ asynStatus xpad::setExposureParameters() {
 	buffer-=buffer2;
 	
 	if(buffer>4294967295){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: ERROR: time between images is too big, reset to 32 bit unsigned max value\n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: time between images is too big, reset to 32 bit unsigned max value\n", driverName, functionName);
 		buffer=4294967295;
 		setDoubleParam(ADAcquirePeriod,4294,967295);
 
@@ -1085,7 +1083,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Overflow Time*/
 	status=getIntegerParam(xpad_overflow,& overflow);
 	if(status!=asynSuccess ||  overflow<4000){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: Overflow time must be superior to 4000 µs \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: Overflow time must be superior to 4000 µs \n", driverName, functionName);
 		 overflow=4000;
 		setIntegerParam(xpad_overflow, overflow);
 	}
@@ -1093,7 +1091,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Output format*/
 	status=getIntegerParam(xpad_outformat,& outformat);
 	if(status!=asynSuccess ||  outformat<0 || outformat>1){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: Only 2 output format possibe: 0:Binary  1: ascii , reset to Binary (default) \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: Only 2 output format possibe: 0:Binary  1: ascii , reset to Binary (default) \n", driverName, functionName);
 		 outformat=0;
 		setIntegerParam(xpad_outformat, outformat);
 	}
@@ -1101,7 +1099,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Image number/stack*/
 	status=getIntegerParam(xpad_stacksize,& stacksize);
 	if(status!=asynSuccess ||  stacksize<0 ){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: Warning: server stacksize reset to 1(default) \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: Warning: server stacksize reset to 1(default) \n", driverName, functionName);
 		 stacksize=1;
 		setIntegerParam(xpad_stacksize, stacksize);
 	}
@@ -1109,7 +1107,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Output server filepath */
 	status=getStringParam(xpad_outpath,MAX_MESSAGE_SIZE, servfilepath);
 	if(status!=asynSuccess ){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR, "%s:%s: Warning:Output server filepath reset to /opt/imXPAD/tmp_corrected/ (default) \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: Warning:Output server filepath reset to /opt/imXPAD/tmp_corrected/ (default) \n", driverName, functionName);
 		epicsSnprintf(servfilepath, sizeof(servfilepath),"/opt/imXPAD/tmp_corrected/"); 
 		setStringParam(xpad_outpath,servfilepath);
 	}
@@ -1120,7 +1118,7 @@ asynStatus xpad::setExposureParameters() {
 	epicsSnprintf(this->toServer, sizeof(this->toServer),"setExposureParameters %i %u %u %i %i %i %i %i %d %d %i %i %s", numimg,  (uint32_t)buffer2,(uint32_t)buffer  , overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath); 	
 	writeServer(this->toServer);
 	status=waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);	
-	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s%s: End of setting the exposure parameters \n FRAME SENT: setExposureParameters %i %i %i %i %i %i %i %i %d %d %i %i %s\n Setting returned %s\n",driverName,functionName, numimg, (uint32_t)buffer2, (uint32_t)buffer, overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath,fromServer); 
+	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s: End of setting the exposure parameters \n FRAME SENT: setExposureParameters %i %i %i %i %i %i %i %i %d %d %i %i %s\n Setting returned %s\n",driverName,functionName, numimg, (uint32_t)buffer2, (uint32_t)buffer, overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath,fromServer); 
 
 	/**We need the image size to prepare the buffer recieving the image
 	 * This can change depending on geometrical corection status 
@@ -1187,7 +1185,7 @@ void xpad::xpadTask(){
         callParamCallbacks();
         /* Release the lock while we wait for an event that says acquire has started, then lock again */
         this->unlock();
-        asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW, "%s:%s: Waiting for start event\n", driverName, functionName);
+        asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: Waiting for start event\n", driverName, functionName);
         status = epicsEventWait(this->startEventId);
         this->lock();
 
@@ -1265,7 +1263,7 @@ void xpad::xpadTask(){
 				status=setExposureParameters();
 				getStringParam(xpad_whitepath,MAX_FILENAME_LEN,strval);
 				if(!status)createWhiteImage(strval);
-				else		asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR,  "%s%s:Preparation for create white image failed\n ",driverName,functionName);
+				else		asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s%s:Preparation for create white image failed\n ",driverName,functionName);
 
 				setIntegerParam(ADStatus,xpadStatusIdle);
 				this->mode = xmode_idle;
@@ -1312,7 +1310,7 @@ void xpad::xpadAbortTask(){
         //mainTask.epicsThreadSuspendSelf();
         pasynOctetSyncIO->connect("XpadAbort", 1, &this->pasynAbortServer, NULL);
 
-		asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR|ASYN_TRACE_FLOW|ASYN_TRACEIO_DEVICE|ASYN_TRACEIO_FILTER|ASYN_TRACEIO_DRIVER ,  "\n\n%s: ABORTER THREAD HAS AWOKEN \n\n\n ",driverName);
+		asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER|ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER|ASYN_TRACEIO_DEVICE|ASYN_TRACEIO_FILTER|ASYN_TRACEIO_DRIVER ,  "\n\n%s: ABORTER THREAD HAS AWOKEN \n\n\n ",driverName);
 		epicsSnprintf(this->toServer, sizeof(this->toServer),"AbortCurrentProcess");
 
 		pasynOctetSyncIO->write(pasynAbortServer, toServer, sizeof(toServer),XPAD_COMMAND_TIMEOUT,&nWrite_);
@@ -1346,14 +1344,14 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
     int function = pasynUser->reason;
     asynStatus status = asynSuccess;
     const char *functionName = "writeInt32"; 
-    asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW,  "%s%s: Entering Write32\n ",driverName,functionName);
+    asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,  "%s%s: Entering Write32\n ",driverName,functionName);
     status = setIntegerParam(function, value);
     char strval[MAX_FILENAME_LEN];
 
     if (function == ADAcquire) {
-		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW, "reason ADAcquire \n");
+		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "reason ADAcquire \n");
         if (value && (this->mode == xmode_idle)) {
-			asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW, " case value && (this->mode == xmode_idle \n");
+			asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, " case value && (this->mode == xmode_idle \n");
             /* Send an event to wake up the xpad task.  */
             this->mode=xmode_aquire;
             setIntegerParam(ADNumImagesCounter,0);
@@ -1361,7 +1359,7 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
             epicsEventSignal(this->startEventId);
         } 
         if (!value && (this->mode != xmode_idle)) {
-			asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW,  " case !value && (this->mode != xmode_idle \n");
+			asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,  " case !value && (this->mode != xmode_idle \n");
             /* Stop acquiring (ends exposure, does not abort) */
          //    epicsThreadCreate("xpadAbortTask",epicsThreadPriorityHigh,epicsThreadGetStackSize(epicsThreadStackMedium),(EPICSTHREADFUNC)xpadAbortTaskC,this) == NULL;
             epicsEventSignal(this->stopEventId);
@@ -1370,21 +1368,21 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
         }
     }  
     else if (function == xpadChangeMode) {
-		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW,  "reason XpadChangeMode  \n");
+		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,  "reason XpadChangeMode  \n");
         if (value && (this->mode == xmode_idle)) {
            this->mode = xmode_changin;
             /* Send an event to wake up the xpad task.  */
             epicsEventSignal(this->startEventId);
         } 
     } else if (function == xpadAbort) {
-		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW,  "reason ABORT \n");
+		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,  "reason ABORT \n");
        
             /* Abort operation */
             setIntegerParam(ADStatus, xpadStatusAborting);
 			callParamCallbacks();
             epicsEventSignal(this->abortEventId);        
     }else if (function == xpad_reset) {
-		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW,  "reason ABORT \n");
+		 asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,  "reason ABORT \n");
 			this->mode=xmode_reset;
             setIntegerParam(ADStatus, xpadStatusWaiting);
 			callParamCallbacks();
@@ -1433,7 +1431,7 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
 	}
  
     else {
-		 //asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR, "reason other: %s/\n",function.functionName );
+		 //asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "reason other: %s/\n",function.functionName );
         /* If this is not a parameter we have handled call the base class */
         if (function < FIRST_XPAD_PARAM) status = ADDriver::writeInt32(pasynUser, value);
     }
@@ -1441,7 +1439,7 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
     /* Do callbacks so higher layers see any changes */
     callParamCallbacks();
     
-    if (status)  asynPrint(pasynUser, ASYN_TRACE_ERROR, "%s:%s: ERROR: status=%d function=%d, value=%d\n", driverName, functionName, status, function, value);
+    if (status)  asynPrint(pasynUser, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: status=%d function=%d, value=%d\n", driverName, functionName, status, function, value);
 
     return status;
 }
@@ -1580,7 +1578,7 @@ xpad::xpad(const char *portName, const char *serverPort,int maxBuffers, size_t m
 	    status |= setStringParam(xpad_outpath,"/opt/imXPAD/tmp_corrected/");
 	    status |= setStringParam(xpad_filepath,"/EpicsOirledCalib.cfg");// 
 	    status |= setStringParam(xpad_whitepath,"EpicsOirled.dat");
-
+		callParamCallbacks();
 	    /* Create the thread that collects the data */
 	    mainTask=epicsThreadCreate("xpadTask",epicsThreadPriorityMedium,epicsThreadGetStackSize(epicsThreadStackMedium),(EPICSTHREADFUNC)xpadTaskC,this);
 		status = (mainTask == NULL);
