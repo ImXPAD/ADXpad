@@ -1,12 +1,14 @@
 /**<xpad.cpp
  * 
  * This is a driver for any XPAD detector.
- * It uses a TCP/IP socket to communicate with the XpadXXXServer in version 2.x and 3.0 XXX being either PCI or USB.
+ * It uses a TCP/IP socket to communicate with the XpadXXXServer in version 3.x XXX being either PCI or USB.
  * It can set most of the parameter the detector (and thus server) has to offer.
  *
  * 
  * Author: Nicolas Delrio       nclsdlr(at)gmail.com
- * 			 			@ ImXPAD
+ * 			 			@ ImXPAD	Supervised by Dr. Hector Perez Ponce
+ * 
+ * 
  * Based on  
  * 			Mark Rivers
  *        			 University of Chicago
@@ -26,246 +28,7 @@
   * Timeouts on the asyn interface are in seconds 
   * 
   * */
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <stdint.h>
-#include <math.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
-
-#include <epicsTime.h>
-#include <epicsThread.h>
-#include <epicsEvent.h>
-#include <epicsTimer.h>
-#include <epicsMutex.h>
-#include <epicsString.h>
-#include <epicsStdio.h>
-#include <epicsMutex.h>
-#include <cantProceed.h>
-#include <iocsh.h>
-#include <asynOctetSyncIO.h>
-#include <asynOctet.h>
-#include <epicsExport.h>
-
-
-
-#include "ADDriver.h"
-
-
-#define MAX_MESSAGE_SIZE 256
-#define MAX_OCT_BUFF_SIZE 256
-#define MAX_FILENAME_LEN 256
-#define XPAD_SOCKET_TIMEOUT 1.0
-#define XPAD_COMMAND_TIMEOUT 30.0
-#define XPAD_POLL_DELAY .02
-#define MAX_RETURN_SIZE 256
-///NON NUL
-#define XPAD_SUPP_DELAY 10 
-
-
-/// Aquisition mode choices
-typedef enum {
-
-	xmode_aquire,
-	xmode_calib,
-	xmode_scalib,
-	xmode_config,
-	xmode_loadingcalib,
-	xmode_white,
-	digitaltest,
-	xmode_idle,
-	xmode_changin,
-	xmode_reset,
-	xmode_prompts,
-	xmode_promptr
-} xpad_mode;
-
-
-typedef enum {
-	AM_standard,
-	AM_detector_burst,
-	AM_comupter_burst,
-	AM_stacking_16b,
-	AM_stacking_32b,
-	AM_single_bunch_16b,
-	AM_single_bunch_32b,
-} xpad_acquisition_mode;
-
-
-///brief Trigger mode choices 
-typedef enum {
-    IS_internal = ADTriggerInternal,
-    IS_external = ADTriggerExternal,
-    IS_external_multiple,
-    IS_external_single
-} xpad_input_signal;
-
-/// type of server returns 
-typedef enum {
-	OS_exposure_busy,
-	OS_shutter_busy,
-	OS_busy_update_overflow,
-	OS_pixel_counter_on,
-	OS_external_gate,
-	OS_exposure_read_done,
-	OS_data_transfer,
-	OS_RAMready_imgbusy,
-	OS_to_localDDR,
-	OS_localDDR_to_PC
-} xpad_output_signal;
-typedef enum {
-	UNPACK_CALIB,
-	UNPACK_DETECTOR_SIZE,
-	UNPACK_QUOTE,
-	UNPACK_LIST
-} unpack_mode;
-/// Status choices 
-typedef enum {
-    xpadStatusIdle,
-    xpadStatusExpose,
-    xpadStatusScan,
-    xpadStatusErase,
-    xpadStatusChangeMode,
-    xpadStatusAborting,
-    xpadStatusError,
-    xpadStatusWaiting,
-    xpadStatusConfigorCalib
-} xpadStatus_t;
-
-
-
-/** Driver-specific parameter strings for the xpad driver */
-
-#define xpadChangeModeString    "XPAD_CHANGE_MODE"
-
-#define xpadAbortString         "XPAD_ABORT"
-#define xpad_acq_modeString "XPAD_ACQUISITION_MODE" 
-#define xpad_stacksizeString "XPAD_STACKSIZE" 
-#define xpad_geo_correctionString "XPAD_GEOMETRICAL_CORRECTION_FLAG"
-#define xpad_flat_fieldString "XPAD_FLAT_FIELD_CORRECTION_FLAG"
-#define xpad_img_transferString "XPAD_IMAGE_TRANSFER_FLAG"
-#define xpad_filepathString "XPAD_FILEPATH"
-#define xpad_load_calibString "XPAD_LOAD_CALIB"
-#define xpad_save_calibString "XPAD_SAVE_CALIB"
-#define xpad_outputString "XPAD_OUTPUT_SIGNAL"
-#define xpad_overflowString "XPAD_OVERFLOW_TIME"
-#define xpad_outformatString "XPAD_OUTPUT_FORMAT"
-#define xpad_outpathString "XPAD_OUTPUT_SERVER_FILEPATH"
-#define xpad_white_imageString "XPAD_WHITE_IMAGE_ACTIVATOR"
-#define xpad_chose_whiteString "XPAD_CHOSE_WHITE"
-#define xpad_show_whiteString "XPAD_SHOW_WHITE"
-#define xpad_sendString "XPAD_SEND_TOSERVER"
-#define xpad_whitepathString "XPAD_WHITEPATH"
-#define xpad_readString "XPAD_READ_FROMSERVER"
-#define xpad_resetString "XPAD_RESET"
-
-
-static const char *driverName = "xpad";
-
-/** Driver for xpad online pixel array detectors; communicates with the XpadPCIServer and XPadUSBServer programs 
-  * over a TCP/IP socket .
-  * The XPadXXXServer program must be running listening for commands on a
-  * given port.  This is done by running it on a specified port f.e.
-  *  "XpadPCIServer 3456" 
-  * In this example 3456 is the TCP/IP port number that the XpadXXXServer and this driver will use to
-  * communicate.
-  * If you are running the server on another port please change the value in the st.cmd file
-  */
-class xpad : public ADDriver {
-public:
-    xpad(const char *portName, const char *xpadPort,int maxBuffers, size_t maxMemory,int priority, int stackSize);
-                 
-    /* These are the methods that we override from ADDriver */
-    virtual asynStatus writeInt32(asynUser *pasynUser, epicsInt32 value);
-    virtual void report(FILE *fp, int details);
-    epicsEventId startEventId; /**< Should be private but accessed from C, must be public */
-    epicsEventId stopEventId; 
-    epicsEventId abortEventId; 
-    void xpadTask();
-    void xpadAbortTask();   
-
-
-protected:
-//activation flags (medm button f e)
-	int xpadChangeMode;
-	#define FIRST_XPAD_PARAM xpadChangeMode
-	int xpad_load_calib;
-	int xpad_save_calib;
-	int xpad_white_image;
-	int xpad_chose_white;
-	int xpad_show_white;
-	int xpad_reset;
-	int xpadAbort;
-	int xpad_send;
-	int xpad_read;
-
-///Name of the white image file
-	int xpad_whitepath;
-///Output server filepath 
-    int xpad_outpath;
-///Calibration filepath
-	int xpad_filepath;
-
-
-	
-	//Exposure parameters (which are not already in ADDriver.h)
-	
-	///Acquisition mode
-	int xpad_acq_mode;
-    ///Toggle geometrical correction: default 0
-	int xpad_geo_correction;
-    ///Toggle flat field correction: default 0
-    int xpad_flat_field;
-   ///image transfer flag 
-   /** At the end of exposure if set to true the images will be send in binary via tcp
-     *  if set to 0 they will be saved in "output server filepath" */
-    int xpad_img_transfer;
-    ///Output signal
-    int xpad_output;
-    int xpad_overflow;
-    ///Basicaly useless for epics users
-    int xpad_outformat;
-    ///Stacksize for stacking mode
-    int xpad_stacksize;
-
-    #define LAST_XPAD_PARAM xpad_stacksize
-
-private:      
-	asynStatus unpackServer(char* input	,char * output,int mode,int param);
-	asynStatus unpackServer(int mode);
-    asynStatus writeServer(const char *output);
-    asynStatus readServer(char *input, size_t maxChars, double timeout);
-    asynStatus waitForCompletion(const char *doneString,char * returnstr, double timeout);
-    asynStatus loadConfigFromFile(const char * fileName);
-	asynStatus saveConfigToFile( const char * fileName);
-	asynStatus createWhiteImage(char *);
-    asynStatus setExposureParameters(void);
-    asynStatus changeMode(void);
-    asynStatus getImageStream(void);
-	asynStatus xpadInit();
-
-    /* data treatment  */
-    epicsTimerId timerId;
-    xpad_mode mode;
-    char toServer[MAX_MESSAGE_SIZE];
-    char fromServer[MAX_RETURN_SIZE] ;
-    asynUser *pasynUserServer;
-    asynUser *pasynAbortServer;
-    bool ready;
-    char serverPort[32];
-    epicsThreadId mainTask;
-	epicsThreadId abortTask;
-
-};
-
-#define NUM_XPAD_PARAMS ((int)(&LAST_XPAD_PARAM - &FIRST_XPAD_PARAM + 1))
-
+#include "xpad.h"
 
 ///Start the exposure with the previously given parameters catch the image sent by the server
 asynStatus xpad::getImageStream()
@@ -307,7 +70,7 @@ asynStatus xpad::getImageStream()
 	if(trigger!=IS_internal)asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s%s:WARNING: trigger enabled, the driver will wait forever if the image is not sent. \n",driverName,functionName);
 
 
-	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s:gonna writeread with %lf s timeout \n",driverName,functionName,timeout);
+	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s:Gonna writeread with %lf s timeout \n",driverName,functionName,timeout);
 	setStringParam(ADStringToServer,toServer);
 	setIntegerParam(ADStatus,xpadStatusExpose);
 	callParamCallbacks();
@@ -439,14 +202,14 @@ lock();
 		/**Last parameters (could be compared to metadatas) are then set
 		*/
 
-	    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: end of image %d readout\n",driverName, functionName,imgtot);
+	    asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: End of image %d readout\n",driverName, functionName,imgtot);
 	    getIntegerParam(NDArrayCounter, &ival);
 	    epicsTimeGetCurrent(&now);
 	    pImage->uniqueId = ival;
 	    pImage->timeStamp = now.secPastEpoch + now.nsec / 1.e9;
 	    updateTimeStamp(&pImage->epicsTS);
 	    this->getAttributes(pImage->pAttributeList);
-	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: calling NDArray callback\n", driverName, functionName);
+	    asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: Calling NDArray callback\n", driverName, functionName);
 	    /** Once complete the buffer is transfered where it is needed */
 	    this->unlock();
 	    doCallbacksGenericPointer(pImage, NDArrayData, 0);
@@ -662,7 +425,6 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 	uint8_t * buffer=NULL;
 	int ival;
 	bool g_or_l;
-	asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s:%s: ENTERED FUNC file:%s\n",  driverName, functionName,fileName);
 	
 	strcpy(fileName_cpy,fileName);
 	ival=strlen(fileName);
@@ -704,11 +466,11 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 	nSet=0;nWrite=0;
 	while(nSet<filesentsize){
 		pasynOctetSyncIO->write(this->pasynUserServer, pOut,filesentsize-nSet, XPAD_SOCKET_TIMEOUT,&nWrite);
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: nWrite: %d nSet:%d\n", driverName, functionName,(int)nWrite,(int) nSet);
+		//asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: nWrite: %d nSet:%d\n", driverName, functionName,(int)nWrite,(int) nSet);
 		nSet+=nWrite;
 		pOut+=nWrite;
 	}
-	asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING: set=%d\nfilesentsize=%d%s\n\n", driverName, functionName,(int)nSet,filesentsize,fileName_cpy);
+	//asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING: set=%d\nfilesentsize=%d%s\n\n", driverName, functionName,(int)nSet,filesentsize,fileName_cpy);
 
 	free(buffer);
 	
@@ -718,7 +480,7 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: local filename is :%s\n", driverName, functionName,fileName_cpy);
 		if(loadConfigFromFile(fileName_cpy)==asynError) asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING:No local configuration has been made \n", driverName, functionName);
 	}
-	epicsEventWaitWithTimeout(abortEventId,10+XPAD_SUPP_DELAY/2);
+	epicsEventWaitWithTimeout(abortEventId,10);//WARNING abort uneffective on the server just wrking on the client you still wont be able to do anything until the end of the calibration exposure
 	return asynSuccess;
 }
 
@@ -733,13 +495,11 @@ asynStatus xpad::writeServer(const char *output)
     /* Flush any stale input, since the next operation is likely to be a read */
     pasynOctetSyncIO->flush(pasynUser);
     status = pasynOctetSyncIO->write(pasynUser, output,strlen(output), XPAD_SOCKET_TIMEOUT, &nwrite);                                  
-    if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s:%s: ERROR writing on server status=%d, sent:%s\n",  driverName, functionName, status, output);
+    if (status) asynPrint(pasynUser, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s:%s: ERROR writing on server status=%d, sending:%s\n",  driverName, functionName, status, output);
 
     /* Set output string so it can get back to EPICS */
     setStringParam(ADStringToServer, output);
     callParamCallbacks();
-    //GetWhiteImagesInDir pour avoir la liste des white
-
     return(status);
 }
 asynStatus xpad::unpackServer(int mode){
@@ -870,12 +630,12 @@ asynStatus xpad::waitForCompletion(const char *doneString,char * resultstr, doub
     epicsTimeStamp start, now;
     int abort;
     const char *functionName = "waitForCompletion";
-   	asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s  waiting for %s from server\n", driverName, functionName,doneString);
+   	asynPrint(this->pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s  Waiting for %s from server\n", driverName, functionName,doneString);
     epicsTimeGetCurrent(&start);
     while (1) {
 		getIntegerParam(ADStatus, &abort);
 		if(abort==ADStatusAborted || abort==xpadStatusAborting)return asynError;
-        status = readServer(resultstr, sizeof(resultstr), XPAD_POLL_DELAY);
+        status = readServer(resultstr, MAX_RETURN_SIZE, XPAD_POLL_DELAY);
         if (status == asynSuccess) {
 
 			            if (strncmp(resultstr,doneString,sizeof(doneString))==0){
@@ -897,7 +657,7 @@ asynStatus xpad::waitForCompletion(const char *doneString,char * resultstr, doub
         }
         epicsTimeGetCurrent(&now);
         elapsedTime = epicsTimeDiffInSeconds(&now, &start);
-        if (elapsedTime > timeout) { asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,"%s:%s: error waiting for response from XpadXXXServer\n",driverName, functionName);
+        if (elapsedTime > timeout) { asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,"%s:%s: Error waiting for response from XpadXXXServer\n",driverName, functionName);
             return(asynError);
         }
     }
@@ -948,11 +708,10 @@ asynStatus xpad::xpadInit()
 	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPAD is already initialized, Ask Ready \n. ",driverName,functionName);
 	    status= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
 	    if(status==asynError) { 
-		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer failed Init, Try again \n ",driverName,functionName);
+		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer AskReady failed, Try again \n ",driverName,functionName);
 		   ready=false;
 		  	    
 		}
-		readServer(fromServer,MAX_MESSAGE_SIZE,0.5);
 		return status;
 	}
 }
@@ -991,7 +750,7 @@ asynStatus xpad::setExposureParameters() {
 	 /** Acquisiton mode*/
 	status=getIntegerParam(xpad_acq_mode,& acqumode);
 	if(status!=asynSuccess ||  acqumode<0 ||  acqumode>6){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set ascquisition mode, Reset to DEFAULT: Standard\n ", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set acquisition mode, Reset to DEFAULT: Standard\n ", driverName, functionName);
 		 acqumode=AM_standard;
 		setIntegerParam(xpad_acq_mode, acqumode);
 	}
@@ -1023,7 +782,7 @@ asynStatus xpad::setExposureParameters() {
 	/**Input signals  (trigger modes)*/
 	status=getIntegerParam(ADTriggerMode,& input);
 	if(status!=asynSuccess ||  input<0 ||  input>3){
-		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set input signal, Reset to DEFAULT: Internal \n", driverName, functionName);
+		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set input signal, Reset to DEFAULT: Internal (no external triggerin) \n", driverName, functionName);
 		 input=IS_internal;
 		setIntegerParam(ADTriggerMode, input);
 	}
@@ -1061,17 +820,21 @@ asynStatus xpad::setExposureParameters() {
 		 exptime=4294.967280;
 		setDoubleParam(ADAcquireTime, exptime);
 	}
-	buffer2=1000000.0*exptime;
+	buffer2=1000000.0;
+	buffer2*=exptime;
 	
 	/** Time between images*/
 	status=getDoubleParam(ADAcquirePeriod,& waittime);
-	if(status!=asynSuccess ||  waittime<=0.000001 ||exptime>waittime){
+	if(status!=asynSuccess ||  waittime<0.000000 ||exptime>waittime){
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: time between images must be a positive value min=1µs\n adaquireperiod must be greater than AcquireTime , Reset to DEFAULT: time between images 15 ms\n", driverName, functionName);
 		 waittime=0.015+ exptime;
+
 		setDoubleParam(ADAcquirePeriod, waittime);
 	}
-	buffer=1000000*waittime;
-	buffer-=buffer2;
+	buffer=(long double)waittime*1000000.0;
+	buffer-=(double)buffer2;
+
+	
 	
 	if(buffer>4294967295){
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: time between images is too big, reset to 32 bit unsigned max value\n", driverName, functionName);
@@ -1115,10 +878,10 @@ asynStatus xpad::setExposureParameters() {
 
 	
 	/**Sendin config to server */
-	epicsSnprintf(this->toServer, sizeof(this->toServer),"setExposureParameters %i %u %u %i %i %i %i %i %d %d %i %i %s", numimg,  (uint32_t)buffer2,(uint32_t)buffer  , overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath); 	
+	epicsSnprintf(this->toServer, sizeof(this->toServer),"setExposureParameters %i %.0lf %.0lf %i %i %i %i %i %d %d %i %i %s", numimg,  (double)buffer2,(double)buffer  , overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath); 	
 	writeServer(this->toServer);
 	status=waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);	
-	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s: End of setting the exposure parameters \n FRAME SENT: setExposureParameters %i %i %i %i %i %i %i %i %d %d %i %i %s\n Setting returned %s\n",driverName,functionName, numimg, (uint32_t)buffer2, (uint32_t)buffer, overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath,fromServer); 
+	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s: End of setting the exposure parameters \n FRAME SENT: setExposureParameters %i %.0lf %.0lf %i %i %i %i %i %d %d %i %i %s\n Setting returned %s\n",driverName,functionName, numimg, (double)buffer2, (double)buffer, overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath,fromServer); 
 
 	/**We need the image size to prepare the buffer recieving the image
 	 * This can change depending on geometrical corection status 
@@ -1568,7 +1331,7 @@ xpad::xpad(const char *portName, const char *serverPort,int maxBuffers, size_t m
 	    status |= setDoubleParam (ADAcquirePeriod, 1.015);
 	    status |= setIntegerParam(ADNumImages, 1);
 		status |= setIntegerParam (xpad_acq_mode,AM_standard) ;
-	   status |= setIntegerParam(xpad_geo_correction,0);//no geometrical correction raw hardware bitmap
+		status |= setIntegerParam(xpad_geo_correction,0);//no geometrical correction raw hardware bitmap
 	    status |= setIntegerParam( xpad_flat_field, 0);// flat fiel correction enabled
 	    status |= setIntegerParam(xpad_img_transfer,1);//streaming images over the network, not usefull if the client is on the same machine as the server
 	    status |= setIntegerParam(ADTriggerMode,IS_internal);
