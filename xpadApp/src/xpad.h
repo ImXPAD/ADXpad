@@ -176,6 +176,12 @@ typedef enum {
 #define xpad_whitepathString "XPAD_WHITEPATH"
 #define xpad_readString "XPAD_READ_FROMSERVER"
 #define xpad_resetString "XPAD_RESET"
+#define xpad_otnString "XPAD_OTN"
+#define xpad_otn_pulseString "XPAD_OTN_PULSE"
+#define xpad_beamcalib_timeString "XPAD_BEAMCALIB_TIME"
+#define xpad_ITHL_maxString "XPAD_ITHL_MAX"
+#define xpad_speedString "XPAD_SPEED"
+#define xpad_beamString "XPAD_BEAM"
 
 
 static const char *driverName = "xpad";
@@ -216,6 +222,10 @@ protected:
 	int xpadAbort;
 	int xpad_send;
 	int xpad_read;
+	int xpad_beam;
+	int xpad_otn;
+	int xpad_otn_pulse;
+	
 
 ///Name of the white image file
 	int xpad_whitepath;
@@ -246,7 +256,12 @@ protected:
     ///Stacksize for stacking mode
     int xpad_stacksize;
 
-    #define LAST_XPAD_PARAM xpad_stacksize
+//Calib param
+	int xpad_beamcalib_time;
+	int xpad_ITHL_max;
+	int xpad_speed;
+	
+	    #define LAST_XPAD_PARAM xpad_speed
 
 private:      
 	asynStatus unpackServer(char* input	,char * output,int mode,int param);

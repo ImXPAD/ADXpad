@@ -11,9 +11,9 @@ epicsEnvSet("PORT" ,   "XPAD")
 # The queue size for all plugins
 epicsEnvSet("QSIZE",  "20")
 # The maximim image width; used for row profiles in the NDPluginStats plugin
-epicsEnvSet("XSIZE",  "3450")
+epicsEnvSet("XSIZE",  "1120")
 # The maximim image height; used for column profiles in the NDPluginStats plugin
-epicsEnvSet("YSIZE",  "3450")
+epicsEnvSet("YSIZE",  "1200")
 # The maximum number of time series points in the NDPluginStats plugin
 epicsEnvSet("NCHANS", "2048")
 # The maximum number of frames buffered in the NDPluginCircularBuff plugin
@@ -54,7 +54,7 @@ dbLoadRecords("$(XPAD)/db/xpad.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=
 NDStdArraysConfigure("Image1",3, 0, "$(PORT)", 0)
 
 
-dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Int32,FTVL=LONG,NELEMENTS=200000000")
+dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Int32,FTVL=LONG,NELEMENTS=200")
 
 # Load all other plugins using commonPlugins.cmd
 < $(ADCORE)/iocBoot/commonPlugins.cmd

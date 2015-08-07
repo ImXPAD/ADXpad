@@ -6,7 +6,7 @@ file {
 display {
 	object {
 		x=1
-		y=46
+		y=1
 		width=878
 		height=650
 	}
@@ -1730,8 +1730,8 @@ composite {
 }
 "related display" {
 	object {
-		x=620
-		y=507
+		x=339
+		y=495
 		width=200
 		height=22
 	}
@@ -1742,7 +1742,7 @@ composite {
 	}
 	clr=2
 	bclr=11
-	label="White Image Menu"
+	label="Calibration"
 }
 text {
 	object {
@@ -1756,90 +1756,4 @@ text {
 	}
 	textix="Calibration"
 	align="horiz. centered"
-}
-text {
-	object {
-		x=22
-		y=488
-		width=38
-		height=20
-	}
-	"basic attribute" {
-		clr=2
-	}
-	textix="File"
-	align="horiz. right"
-}
-composite {
-	object {
-		x=65
-		y=480
-		width=771
-		height=43
-	}
-	"composite name"=""
-	children {
-		"text update" {
-			object {
-				x=336
-				y=484
-				width=500
-				height=15
-			}
-			monitor {
-				chan="$(P)$(R)Filepath_RBV"
-				clr=26
-				bclr=12
-			}
-			format="string"
-			limits {
-			}
-		}
-		"text entry" {
-			object {
-				x=65
-				y=480
-				width=267
-				height=20
-			}
-			control {
-				chan="$(P)$(R)Filepath"
-				clr=1
-				bclr=13
-			}
-			format="string"
-			limits {
-			}
-		}
-		"message button" {
-			object {
-				x=217
-				y=503
-				width=114
-				height=20
-			}
-			control {
-				chan="$(P)$(R)SaveCalib"
-				clr=5
-				bclr=11
-			}
-			label="Save Calibration"
-			press_msg="1"
-		}
-		"message button" {
-			object {
-				x=65
-				y=503
-				width=114
-				height=20
-			}
-			control {
-				chan="$(P)$(R)LoadCalib"
-				clr=5
-				bclr=11
-			}
-			label="Load Calibration"
-			press_msg="1"
-		}
-	}
 }

@@ -54,7 +54,6 @@ record(waveform, "$(P)$(R)Whitepath_RBV")
 #part of exposure parameters
 record(waveform, "$(P)$(R)OutPath")
 {
-	field(PINI, "YES")
     field(DTYP, "asynOctetWrite")
     field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OUTPUT_SERVER_FILEPATH")
     field(FTVL, "CHAR")
@@ -315,6 +314,71 @@ record(longin, "$(P)$(R)StackSize_RBV")
    field(SCAN, "I/O Intr")
 }
 
+######################################
+#Beam Calib Parameters               #
+######################################
+record(ao, "$(P)$(R)BeamCalibTime")
+{
+   field(PINI, "YES")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_BEAMCALIB_TIME")
+   field(PREC, "6")
+   field(VAL,  "10000000")
+   info(autosaveFields, "VAL")
+}
+
+record(ai, "$(P)$(R)BeamCalibTime_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_BEAMCALIB_TIME")
+   field(PREC, "6")
+   field(SCAN, "I/O Intr")
+}
+record(ao, "$(P)$(R)ITHLMax")
+{
+   field(PINI, "YES")
+   field(DTYP, "asynInt32")
+   field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_ITHL_MAX")
+   field(PREC, "3")
+   field(VAL,  "100")
+   info(autosaveFields, "VAL")
+}
+
+record(ai, "$(P)$(R)ITHLMax_RBV")
+{
+   field(DTYP, "asynInt32")
+   field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_ITHL_MAX")
+   field(SCAN, "I/O Intr")
+}
+record(mbbo, "$(P)$(R)Speed")
+{
+   field(DTYP, "asynInt32")
+	field(PINI, "YES")
+   field(OUT,"@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SPEED")
+   field(DESC,"Configuration Speed")
+   field(ZRST, "Slow")
+   field(ZRVL, "0")
+   field(ONST, "Medium")
+   field(ONVL, "1")
+   field(TWST, "Fast")
+   field(TWVL, "2")
+
+
+}
+
+record(mbbi, "$(P)$(R)Speed_RBV")
+{	
+   field(INP,"@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SPEED")
+   field(DTYP, "asynInt32")
+   field(ZRST, "Slow")
+   field(ZRVL, "0")
+   field(ONST, "Medium")
+   field(ONVL, "1")
+   field(TWST, "Fast")
+   field(TWVL, "2")
+
+   field(SCAN, "I/O Intr")
+}
 
 ######################################
 #Activators                          #
@@ -355,6 +419,27 @@ record(busy, "$(P)$(R)SaveCalib") {
    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SAVE_CALIB")
    field(ZNAM, "Done")
    field(ONAM, "SaveCalib")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)OTNPulse") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OTN_PULSE")
+   field(ZNAM, "Done")
+   field(ONAM, "OTNPulse")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)OTN") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_OTN")
+   field(ZNAM, "Done")
+   field(ONAM, "OTN")
+   field(VAL,  "0")
+}
+record(busy, "$(P)$(R)Beam") {
+   field(DTYP, "asynInt32")
+   field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_BEAM")
+   field(ZNAM, "Done")
+   field(ONAM, "Beam Calibration")
    field(VAL,  "0")
 }
 #######Server prompt utilities############
@@ -446,33 +531,43 @@ record(waveform, "$(P)$(R)StringToServer")
 #States machine                      #
 ######################################
 # We replace the states for DetectorState_RBV
-#record(mbbi, "$(P)$(R)DetectorState_RBV")
-#{
-    #field(DTYP, "asynInt32")
-    #field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STATUS")
-    #field(ZRST, "Idle")
-    #field(ZRVL, "0")
-    #field(ZRSV, "NO_ALARM")
-    #field(ONST, "Exposing")
-    #field(ONVL, "1")
-    #field(ONSV, "MINOR")
-    #field(TWST, "Scanning")
-    #field(TWVL, "2")
-    #field(TWSV, "MINOR")
-    #field(THST, "Erasing")
-    #field(THVL, "3")
-    #field(THSV, "MINOR")
-    #field(FRST, "Changing mode")
-    #field(FRVL, "4")
-    #field(FRSV, "MINOR")
-    #field(FVST, "Aborting")
-    #field(FVVL, "5")
-    #field(FVSV, "MINOR")
-    #field(SXST, "Error")
-    #field(SXVL, "6")
-    #field(SXSV, "MAJOR")
-    #field(SVST, "Waiting")
-    #field(SVVL, "7")
-    #field(SVSV, "MINOR")
-    #field(SCAN, "I/O Intr")
-#}
+
+record(mbbi, "$(P)$(R)DetectorState_RBV")
+{
+    field(DTYP, "asynInt32")
+    field(INP,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STATUS")
+    field(ZRST, "Idle")
+    field(ZRVL, "0")
+    field(ZRSV, "NO_ALARM")
+    field(ONST, "Acquire")
+    field(ONVL, "1")
+    field(ONSV, "NO_ALARM")
+    field(TWST, "Readout")
+    field(TWVL, "2")
+    field(TWSV, "NO_ALARM")
+    field(THST, "Correct")
+    field(THVL, "3")
+    field(THSV, "NO_ALARM")
+    field(FRST, "Saving")
+    field(FRVL, "4")
+    field(FRSV, "NO_ALARM")
+    field(FVST, "Aborting")
+    field(FVVL, "5")
+    field(FVSV, "MAJOR")
+    field(SXST, "Error")
+    field(SXVL, "6")
+    field(SXSV, "MAJOR")
+    field(SVST, "Waiting")
+    field(SVVL, "7")
+    field(SVSV, "MINOR")
+    field(EIST, "Initializing")
+    field(EIVL, "8")
+    field(EISV, "NO_ALARM")
+    field(NIST, "Disconnected")
+    field(NIVL, "9")
+    field(NISV, "INVALID")
+    field(TEST, "Aborted")
+    field(TEVL, "10")
+    field(TESV, "MINOR")
+    field(SCAN, "I/O Intr")
+}

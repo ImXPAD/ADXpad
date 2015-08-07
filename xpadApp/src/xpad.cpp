@@ -937,7 +937,7 @@ static void xpadAbortTaskC(void *drvPvt){
 void xpad::xpadTask(){
 	char strval[MAX_FILENAME_LEN];
     int status = asynSuccess;
-    int ival;
+    int ival,ival2,ival3;
     double dval;
     int imageMode;
     const char *functionName = "xpadTask";            
@@ -1000,9 +1000,39 @@ void xpad::xpadTask(){
                 break;
 
             case xmode_config:
-				this->setExposureParameters();
-				this->changeMode();
-                break;
+            	xpadInit();	
+
+            	setIntegerParam(ADStatus,ADStatusWaiting);
+				getIntegerParam(xpad_beam,&ival);
+				asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s%s:beam=%d\n ",driverName,functionName,ival);
+				getIntegerParam(xpad_speed,&ival3);
+
+				if(ival==1){
+					getIntegerParam(xpad_beamcalib_time,&ival);
+					getIntegerParam(xpad_ITHL_max,&ival2);
+					epicsSnprintf(this->toServer, sizeof(this->toServer),"CalibrationBeam %d %d %d",ival,ival2,ival3); 	
+					writeServer(this->toServer);
+					waitForCompletion("* 0",fromServer,ival2-20*ival+63*ival+120+XPAD_SUPP_DELAY);
+				}else{
+					getIntegerParam(xpad_otn,&ival);
+					
+					if(ival==1){
+						epicsSnprintf(this->toServer, sizeof(this->toServer),"CalibrationOTN %d",ival3); 	
+						writeServer(this->toServer);
+						waitForCompletion("* 0",fromServer,1200+XPAD_SUPP_DELAY);
+					}
+					getIntegerParam(xpad_otn_pulse,&ival);
+					if(ival==1){
+						epicsSnprintf(this->toServer, sizeof(this->toServer),"CalibrationOTNPulse %d",ival3); 	
+						writeServer(this->toServer);
+						waitForCompletion("* 0",fromServer,1200+XPAD_SUPP_DELAY);
+					}
+				}
+
+				setIntegerParam(ADStatus,xpadStatusIdle);
+				this->mode = xmode_idle;
+				callParamCallbacks();
+	            break;
             case xmode_calib:
 				status=xpadInit();
 				if(status)break;
@@ -1182,6 +1212,9 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
 		setIntegerParam(ADStatus,xpadStatusIdle);
 		this->mode = xmode_idle;
 		callParamCallbacks();
+	}else if (function == xpad_beam||function == xpad_otn||function == xpad_otn_pulse) {
+		this->mode=xmode_config;
+		epicsEventSignal(startEventId);
 	}else if (function == xpad_white_image) {
 		this->mode=xmode_white;
 		epicsEventSignal(startEventId);
@@ -1288,6 +1321,12 @@ xpad::xpad(const char *portName, const char *serverPort,int maxBuffers, size_t m
 		createParam(xpad_resetString, asynParamInt32, &xpad_reset);
 		createParam(xpad_readString, asynParamInt32, &xpad_read);
 		createParam(xpad_sendString, asynParamInt32, &xpad_send);
+		createParam(xpad_beamString, asynParamInt32, &xpad_beam);
+		createParam(xpad_speedString, asynParamInt32, &xpad_speed);
+		createParam(xpad_beamcalib_timeString, asynParamInt32, &xpad_beamcalib_time);
+		createParam(xpad_ITHL_maxString, asynParamInt32, &xpad_ITHL_max);
+		createParam(xpad_otnString, asynParamInt32, &xpad_otn);
+		createParam(xpad_otn_pulseString, asynParamInt32, &xpad_otn_pulse);
 	
 	    this->mode = xmode_idle;
 	    
