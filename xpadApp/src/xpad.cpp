@@ -21,7 +21,7 @@
  * 
  * 
  *VERSION 1.0.0 aka. Oirled
- *
+ *         
  */
  /**Random infos:
   * 
@@ -245,7 +245,7 @@ lock();
 	//theoricaly useless
 	//nRead_=1;
 	//while(nRead_>0){
-	//pasynOctetSyncIO->read(pasynUser, fromServer, sizeof(fromServer),.1, &nRead_, &eomReason);
+	pasynOctetSyncIO->read(pasynUser, fromServer, sizeof(fromServer),.1, &nRead_, &eomReason);
 	//status=pasynOctetSyncIO->write(pasynUser, "R", 2, XPAD_SOCKET_TIMEOUT,&nWrite_);
 	//pasynOctetSyncIO->read(pasynUser, fromServer, sizeof(fromServer),1, &nRead_, &eomReason);
 	//}
@@ -475,14 +475,15 @@ asynStatus xpad::loadConfigFromFile( const char * fileName){
 	//asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING: set=%d\nfilesentsize=%d%s\n\n", driverName, functionName,(int)nSet,filesentsize,fileName_cpy);
 
 	free(buffer);
-	
+	pasynOctetSyncIO->flush(pasynUserServer);
 	//Same with local config 
 	if(!g_or_l){
 		fileName_cpy[ival-1]='l';
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s: local filename is :%s\n", driverName, functionName,fileName_cpy);
 		if(loadConfigFromFile(fileName_cpy)==asynError) asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:WARNING:No local configuration has been made \n", driverName, functionName);
 	}
-	epicsEventWaitWithTimeout(abortEventId,10);//WARNING abort uneffective on the server just wrking on the client you still wont be able to do anything until the end of the calibration exposure
+	epicsEventWaitWithTimeout(abortEventId,10);
+	readServer(fromServer,sizeof(fromServer),.1);
 	return asynSuccess;
 }
 
@@ -959,7 +960,6 @@ void xpad::xpadTask(){
 
             case xmode_aquire:
 				this->mode=xmode_config;
-				setIntegerParam(ADStatus, xpadStatusChangeMode);
 				callParamCallbacks();
 				setIntegerParam(ADNumImagesCounter,0);
 				status=setExposureParameters();
@@ -1185,7 +1185,7 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
         
     }else if (function == xpad_load_calib) {
 		this->mode=xmode_calib;
-		setIntegerParam(ADStatus, ADStatusInitializing);
+		setIntegerParam(ADStatus, ADStatusWaiting);
 		callParamCallbacks();
 		epicsEventSignal(startEventId);
 	}else if (function == xpad_save_calib) {

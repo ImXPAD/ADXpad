@@ -28,18 +28,8 @@
   * Timeouts on the asyn interface are in seconds 
   * 
   * */
-#include <stddef.h>
-#include <stdlib.h>
-#include <stdarg.h>
+
 #include <stdint.h>
-#include <math.h>
-#include <stdio.h>
-#include <errno.h>
-#include <string.h>
-#include <ctype.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include <epicsTime.h>
 #include <epicsThread.h>
