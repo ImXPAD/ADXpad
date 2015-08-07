@@ -273,6 +273,8 @@ asynStatus xpad::createWhiteImage(char * saymyname){
 	status=waitForCompletion("* 0",this->fromServer,1.65*exptime+XPAD_COMMAND_TIMEOUT);
 	return status;
 }
+
+
 ///Save the current detector calibration in the file at given path
 asynStatus xpad::saveConfigToFile( const char * fileName){
 	const char* functionName="SaveConfigToFile";
@@ -825,7 +827,7 @@ asynStatus xpad::setExposureParameters() {
 	
 	/** Time between images*/
 	status=getDoubleParam(ADAcquirePeriod,& waittime);
-	if(status!=asynSuccess ||  waittime<0.000000 ||exptime>waittime){
+	if(status!=asynSuccess ||  waittime<0.000000 ||exptime+0.000001>waittime){
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: ERROR: time between images must be a positive value min=1µs\n adaquireperiod must be greater than AcquireTime , Reset to DEFAULT: time between images 15 ms\n", driverName, functionName);
 		 waittime=0.015+ exptime;
 

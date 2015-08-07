@@ -64,7 +64,7 @@
 ///Size of the commands sent
 #define MAX_MESSAGE_SIZE 256
 ///For calibration only
-#define MAX_OCT_BUFF_SIZE 256
+#define MAX_OCT_BUFF_SIZE 4096
 ///Lenght of filepaths and filenames
 #define MAX_FILENAME_LEN 256
 #define XPAD_SOCKET_TIMEOUT 1.0
@@ -76,7 +76,7 @@
 #define XPAD_POLL_DELAY .02
 ///Should never be too small 
 /**The bigger the better tested with values between 256 and 15 000*/
-#define MAX_RETURN_SIZE 256
+#define MAX_RETURN_SIZE 4096
 ///Time added to theoretical times, particularly usefull for slow networks
 #define XPAD_SUPP_DELAY 10 
 
