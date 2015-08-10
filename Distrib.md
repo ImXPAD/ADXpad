@@ -4,6 +4,8 @@ This is the list of versions used during development :
 
 *areaDetector R2-2.
 
+*msi.1-7
+
 *asyn.4-26.
 
 *autosave.5-6-1.
