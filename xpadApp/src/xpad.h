@@ -65,7 +65,7 @@
 /**SHorter for fast networks */
 #define XPAD_POLL_DELAY .02
 ///Should never be too small 
-/**The bigger the better tested with values between 256 and 15 000*/
+/**The bigger the better tested with values between 4096 and 15 000*/
 #define MAX_RETURN_SIZE 4096
 ///Time added to theoretical times, particularly usefull for slow networks
 #define XPAD_SUPP_DELAY 10 
