@@ -6,7 +6,7 @@ An
 driver for the detectors from 
 [ImXPad](http://imxpad.com/).
 
-STATE : stable.
+:white_check_mark: STATE : stable.
 
 ###WARNING: Xpad Server v3.0.0 is required
 
