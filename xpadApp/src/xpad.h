@@ -104,8 +104,11 @@ typedef enum {
 typedef enum {
     IS_internal = ADTriggerInternal,
     IS_external = ADTriggerExternal,
-    IS_external_multiple,
-    IS_external_single
+    IS_external_multipleRisingEdge,
+    IS_external_single,
+    IS_stack,
+    IS_multipleLevel,
+    
 } xpad_input_signal;
 
 /// type of server returns 

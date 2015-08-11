@@ -61,7 +61,7 @@ asynStatus xpad::getImageStream()
 	epicsSnprintf(this->toServer, sizeof(this->toServer),"StartExposure");
 	/**
 	 * Start the exposure
-	 * and wait for the server resposne
+	 * and wait for the server response
 	 * 
 	 */
 
@@ -84,8 +84,13 @@ unlock();
 	status=pasynOctetSyncIO->writeRead(pasynUser,this->toServer,sizeof(toServer),fromServer,sizeof(fromServer),timeout,&nWrite_, &nRead_, &eomReason);
 	while(trigger!=IS_internal && nRead_<=3){
 		getIntegerParam(ADStatus, &abort);
-		if(abort!=ADStatusAborted && abort!=xpadStatusAborting)pasynOctetSyncIO->read(pasynUser, fromServer, sizeof(fromServer),10, &nRead_, &eomReason);
-		else break;
+		if(abort!=ADStatusAborted && abort!=xpadStatusAborting){
+			pasynOctetSyncIO->read(pasynUser, fromServer, sizeof(fromServer),10, &nRead_, &eomReason);
+			asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s%s:WARNING: Not aborted\n",driverName,functionName);
+		}
+		else{asynPrint(pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "\n \n%s%s:ABORTEEEEEEEEEEEEEEEEEEEED\n",driverName,functionName);
+			 break;
+		 }
 	}
 lock();	
 		
@@ -109,7 +114,7 @@ lock();
 	 * 
 	 * Conversion from recieved octets to 32bits integers
 	 * 
-	 * the image is streamed that way: (datasize)(width)(height)(data) :: (uint32)(uint32)(uint32)((uint32)*width*height)
+	 * the image is streamed that way: (datasize)(width)(height)(data) :: (uint32)(uint32)(uint32)((int32)*width*height)
 	 */ 
 	dataLen=(uint8_t)fromServer[ival+3]<<24|(uint8_t)fromServer[ival+2]<<16|(uint8_t)fromServer[ival+1]<<8|(uint8_t)fromServer[ival+0];
 	dims[1]=(size_t)((uint8_t)fromServer[ival+7]<<24|(uint8_t)fromServer[ival+6]<<16|(uint8_t)fromServer[ival+5]<<8|(uint8_t)fromServer[ival+4]);
@@ -263,7 +268,7 @@ lock();
 asynStatus xpad::createWhiteImage(char * saymyname){
 	double exptime=0;
 	int ival;
-	asynStatus status=asynError;
+	asynStatus status=asynSuccess;
 	ival=strlen(saymyname);
 	if(strncmp(saymyname+(ival-4),".dat",4)!=0){
 		saymyname[ival]='.';
@@ -384,6 +389,7 @@ asynStatus xpad::saveConfigToFile( const char * fileName){
 	saveFile=NULL;
 	fileName_cpy[strlen(fileName_cpy)-1]='l';
 	saveFile=fopen(fileName_cpy,"w+");
+	
 	epicsSnprintf(this->toServer, sizeof(this->toServer),"ReadConfigL");
 	status=pasynOctetSyncIO->writeRead(this->pasynUserServer,this->toServer,sizeof(toServer),fromServer,sizeof(fromServer),XPAD_COMMAND_TIMEOUT,&nWrite_, &nRead_, &eomReason);
 	ival=0;
@@ -622,8 +628,8 @@ asynStatus xpad::readServer(char *input, size_t maxChars, double timeout)
     if (nread == 0) return(status);
     if (status){
 		 asynPrint(pasynUser, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER,"%s:%s: ERROR reading server failed\ntimeout=%f, status=%d received %lu bytes\n%s\n", driverName, functionName, timeout, status, (unsigned long)nread, input);
-		 setIntegerParam(ADStatus,ADStatusError);		 
-		 }
+		 //setIntegerParam(ADStatus,ADStatusError);		 
+		}
     /* Set output string so it can get back to EPICS */
     setStringParam(ADStringFromServer, input);
     callParamCallbacks();
@@ -677,7 +683,7 @@ asynStatus xpad::waitForCompletion(const char *doneString,char * resultstr, doub
         elapsedTime = epicsTimeDiffInSeconds(&now, &start);
         if (elapsedTime > timeout) { asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,"%s:%s: Error waiting for response from XpadXXXServer\n",driverName, functionName);
 			setIntegerParam(ADStatus,ADStatusError);
-            return(asynError);
+            return(asynTimeout);
         }
     }
 }
@@ -705,12 +711,12 @@ asynStatus xpad::xpadInit()
 	    writeServer(this->toServer);	
 	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPad is initializing\n",driverName,functionName);
 	    status= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
-	    if(status) { 
+	    if(status==asynError|status==asynTimeout) { 
 		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer failed Init, Try again \n",driverName,functionName);
 		   ready=false;
 		   setIntegerParam(ADStatus,ADStatusError);
 		   return status;	    
-			}
+		}
 	    else{
 			writeServer("GetDetectorModel");
 			status=readServer(fromServer,MAX_MESSAGE_SIZE,5);
@@ -727,11 +733,10 @@ asynStatus xpad::xpadInit()
 	    writeServer(this->toServer);	
 	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPAD is already initialized, Ask Ready \n. ",driverName,functionName);
 	    status= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
-	    if(status==asynError) { 
+	    if(status==asynError|status==asynTimeout) { 
 			setIntegerParam(ADStatus,ADStatusError);
 		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer AskReady failed, Try again \n ",driverName,functionName);
-		   ready=false;
-		  	    
+		   ready=false;	    
 		}
 		return status;
 	}
@@ -802,7 +807,7 @@ asynStatus xpad::setExposureParameters() {
 	
 	/**Input signals  (trigger modes)*/
 	status=getIntegerParam(ADTriggerMode,& input);
-	if(status!=asynSuccess ||  input<0 ||  input>3){
+	if(status!=asynSuccess ||  input<0 ||  input>5){
 		asynPrint(this->pasynUserSelf, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s:ERROR Could not set input signal, Reset to DEFAULT: Internal (no external triggerin) \n", driverName, functionName);
 		 input=IS_internal;
 		setIntegerParam(ADTriggerMode, input);
@@ -897,9 +902,11 @@ asynStatus xpad::setExposureParameters() {
 	}
 	 
 
-	
+
 	/**Sendin config to server */
 	epicsSnprintf(this->toServer, sizeof(this->toServer),"setExposureParameters %i %.0lf %.0lf %i %i %i %i %i %d %d %i %i %s", numimg,  (double)buffer2,(double)buffer  , overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath); 	
+	pasynOctetSyncIO->read(pasynUserServer, fromServer, sizeof(fromServer),.1, (size_t*)&input,&output);//use of no more needed parmeters
+
 	writeServer(this->toServer);
 	status=waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);	
 	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s: End of setting the exposure parameters \n FRAME SENT: setExposureParameters %i %.0lf %.0lf %i %i %i %i %i %d %d %i %i %s\n Setting returned %s\n",driverName,functionName, numimg, (double)buffer2, (double)buffer, overflow, input,  output, geocor, flatfcor,imgtrans,outformat,  acqumode, stacksize, servfilepath,fromServer); 
@@ -1005,7 +1012,7 @@ void xpad::xpadTask(){
 						callParamCallbacks();
 						status=waitForCompletion("* 0",fromServer,(1.65*dval)*ival+XPAD_SUPP_DELAY);
 						if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
-						else  setIntegerParam(ADStatus, ADStatusError);
+						else setIntegerParam(ADStatus, ADStatusError);
 					}
 				}else{
 					this->mode = xmode_idle;
@@ -1034,7 +1041,7 @@ void xpad::xpadTask(){
 					getIntegerParam(xpad_ITHL_max,&ival2);
 					epicsSnprintf(this->toServer, sizeof(this->toServer),"CalibrationBeam %d %d %d",ival,ival2,ival3); 	
 					writeServer(this->toServer);
-					status=waitForCompletion("* 0",fromServer,ival2-20*ival+63*ival+120+XPAD_SUPP_DELAY);
+					status=waitForCompletion("* 0",fromServer,(ival2-20)*ival+63.65*ival+120+XPAD_SUPP_DELAY);
 				}else{
 					getIntegerParam(xpad_otn,&ival);
 					
@@ -1051,7 +1058,7 @@ void xpad::xpadTask(){
 					}
 				}
 				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
-				else  setIntegerParam(ADStatus, ADStatusError);
+				else if(status==asynError |status==asynTimeout) setIntegerParam(ADStatus, ADStatusError);
 				this->mode = xmode_idle;
 				callParamCallbacks();
 	            break;
@@ -1081,13 +1088,13 @@ void xpad::xpadTask(){
 				getStringParam(xpad_whitepath,MAX_FILENAME_LEN,strval);
 				if(!status){
 					status=createWhiteImage(strval);
-				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
-				else  setIntegerParam(ADStatus, ADStatusError);
-					}
-				else	{
+					if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
+					else  setIntegerParam(ADStatus, ADStatusError);
+				}
+				else{
 						asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s%s:Preparation for create white image failed\n ",driverName,functionName);
 						setIntegerParam(ADStatus,ADStatusError);
-					}
+				}
 				
 				this->mode = xmode_idle;
 				callParamCallbacks();
@@ -1095,6 +1102,7 @@ void xpad::xpadTask(){
 			case xmode_reset:
 				writeServer("ResetDetector");
 				status=waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
+				ready=false;
 				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
 				else  setIntegerParam(ADStatus, ADStatusError);
 				this->mode = xmode_idle;
