@@ -4,7 +4,7 @@ An
 [EPICS](http://www.aps.anl.gov/epics/) 
 [areaDetector](http://cars.uchicago.edu/software/epics/areaDetector.html) 
 driver for the detectors from 
-[ImXPad](http://http://www.imxpad.com/).
+[ImXPad](http://http://imxpad.com/).
 
 STATE : stable.
 
