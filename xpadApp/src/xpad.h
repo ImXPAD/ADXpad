@@ -69,6 +69,8 @@
 #define MAX_RETURN_SIZE 4096
 ///Time added to theoretical times, particularly usefull for slow networks
 #define XPAD_SUPP_DELAY 10 
+///Should not exist, eliminate chevrons related errors
+#define RETURNED_CHEVRON_ELIMINATION_TIME 0.2
 
 
 /// Aquisition mode choices

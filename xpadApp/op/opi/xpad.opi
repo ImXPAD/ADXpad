@@ -78,7 +78,7 @@
     <crop_bottom>0</crop_bottom>
     <degree>0</degree>
     <border_width>1</border_width>
-    <image_file>logo.gif</image_file>
+    <image_file>logo.png</image_file>
     <border_color>
       <color red="0" green="128" blue="255" />
     </border_color>
