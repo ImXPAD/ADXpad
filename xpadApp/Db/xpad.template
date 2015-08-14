@@ -4,14 +4,16 @@
 
 include "ADBase.template"
 include "NDFile.template"
-record(waveform, "$(P)$(R)ArrayData_RBV")
-{
-    field(DTYP, "asyn$(TYPE)ArrayIn")
-    field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STD_ARRAY_DATA")
-    field(FTVL, "$(FTVL)")
-    field(NELM, "$(NELEMENTS)")
-    field(SCAN, "I/O Intr")
-}
+
+####TO add a Qt viewer (caScan caCamera caWaterfall) you might need that
+#record(waveform, "$(P)$(R)ArrayData_RBV")
+#{
+    #field(DTYP, "asyn$(TYPE)ArrayIn")
+    #field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STD_ARRAY_DATA")
+    #field(FTVL, "$(FTVL)")
+    #field(NELM, "$(NELEMENTS)")
+    #field(SCAN, "I/O Intr")
+#}
 
 ######################################
 #Filepaths and Filenames             #
@@ -194,7 +196,7 @@ record(mbbo, "$(P)$(R)TriggerMode")
    field(ZRVL, "0")
    field(ONST, "External Gate")
    field(ONVL, "1")
-   field(TWST, "External Multiple Edge (rising)")
+   field(TWST, "External Multiple Edge ")
    field(TWVL, "2")
    field(THST, "External Single")
    field(THVL, "3")

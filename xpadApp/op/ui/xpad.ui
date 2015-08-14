@@ -516,9 +516,6 @@ border-radius: 2px;
       <enum>caLineEdit::decimal</enum>
      </property>
     </widget>
-    <zorder>caLabel_5</zorder>
-    <zorder>caLineEdit_0</zorder>
-    <zorder>cacamera</zorder>
    </widget>
    <widget class="caLabel" name="caLabel_6">
     <property name="geometry">
@@ -3930,7 +3927,7 @@ border-radius: 2px;
      </rect>
     </property>
     <property name="filename" stdset="0">
-     <string>logo.gif</string>
+     <string notr="true">logo.png</string>
     </property>
    </widget>
    <widget class="caLabel" name="caLabel_38">
