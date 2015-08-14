@@ -950,7 +950,7 @@ border-radius: 2px;
      <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
-     <string>Exposure Time(�s)</string>
+     <string>Exposure Time(µs)</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignAbsolute|Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>

@@ -4095,48 +4095,6 @@ border-radius: 2px;
       <enum>caLineEdit::string</enum>
      </property>
     </widget>
-    <widget class="caRelatedDisplay" name="caRelatedDisplay_8">
-     <property name="geometry">
-      <rect>
-       <x>320</x>
-       <y>0</y>
-       <width>75</width>
-       <height>15</height>
-      </rect>
-     </property>
-     <property name="label">
-      <string notr="true">VIewer</string>
-     </property>
-     <property name="foreground">
-      <color>
-       <red>255</red>
-       <green>255</green>
-       <blue>255</blue>
-      </color>
-     </property>
-     <property name="background">
-      <color>
-       <red>70</red>
-       <green>70</green>
-       <blue>70</blue>
-      </color>
-     </property>
-     <property name="labels">
-      <string notr="true">Viewer</string>
-     </property>
-     <property name="files">
-      <string notr="true">viewer.ui</string>
-     </property>
-     <property name="args">
-      <string>P=$(P),R=$(R)</string>
-     </property>
-     <property name="stackingMode" stdset="0">
-      <enum>caRowColMenu::Menu</enum>
-     </property>
-     <property name="removeParent" stdset="0">
-      <string>false</string>
-     </property>
-    </widget>
    </widget>
    <widget class="caMessageButton" name="caMessageButton_4">
     <property name="geometry">

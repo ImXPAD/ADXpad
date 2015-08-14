@@ -31,7 +31,7 @@
 #include "xpad.h"
 
 
-// Ce qui dans le code est marqué par des ///////////////////////////////// est un systeme qui evite les probleme de chevron, c'est facultatif dans la pluspart des cas
+// Ce qui dans le code est marqué par des ///////////////////////////////// est un systeme qui evite les probleme de chevrons, c'est facultatif dans la pluspart des cas il faut tout de meme le laisser dans Init je pense
 
 
 ///Start the exposure with the previously given parameters catch the image sent by the server
@@ -702,6 +702,12 @@ asynStatus xpad::xpadInit()
 	if(ready==false){
 		epicsSnprintf(this->toServer, sizeof(this->toServer), "Init");
 	    status=writeServer(this->toServer);	
+	    if(status==asynError|status==asynTimeout) { 
+		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer failed Init, Try again \n",driverName,functionName);
+		   ready=false;
+		   setIntegerParam(ADStatus,ADStatusError);
+		   return (asynStatus)status;	    
+		}
 	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPad is initializing\n",driverName,functionName);
 	    status&= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
 	    if(status==asynError|status==asynTimeout) { 
@@ -710,8 +716,9 @@ asynStatus xpad::xpadInit()
 		   setIntegerParam(ADStatus,ADStatusError);
 		   return (asynStatus)status;	    
 		}
+		
 	    else{
-			writeServer("GetDetectorModel");
+			status=writeServer("GetDetectorModel");
 			status=readServer(fromServer,MAX_MESSAGE_SIZE,5);
 			if(status==asynSuccess){
 				unpackServer(UNPACK_QUOTE);
@@ -752,12 +759,12 @@ asynStatus xpad::setExposureParameters() {
 	int  acqumode,  geocor,  flatfcor,  imgtrans,  input,  output, numimg,  overflow, outformat, stacksize;
 	double  exptime, waittime;
 	char servfilepath[MAX_FILENAME_LEN];
-	asynStatus status=asynSuccess;
+	int status=asynSuccess;
 	long double buffer,buffer2;//These are for not losing any precision when converting seconds to ms; Especialy usefull for very big or very small exposure times and periods
 	/**if it is the first exposure or for a reason ther was a bug on the last one 
 	 * 		We initialize the XPAD detector */
 	status=xpadInit();
-	if(status==asynError)return status;
+	if(status)return (asynStatus)status;
 	
 //	asynPrint(this->pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "=============Exposure parameters setting============================\n.\n.");
 
@@ -940,7 +947,7 @@ asynStatus xpad::setExposureParameters() {
 	setIntegerParam(NDArraySize,sizex*sizey*sizeof(epicsInt32));	
 	callParamCallbacks();
 	
-	return status;
+	return (asynStatus)status;
 }
 
 
@@ -1025,8 +1032,9 @@ void xpad::xpadTask(){
                 break;
 
             case xmode_config:
-            	xpadInit();	
-
+            	status=xpadInit();	
+				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
+				else if(status==asynError |status==asynTimeout) setIntegerParam(ADStatus, ADStatusError);
             	setIntegerParam(ADStatus,ADStatusWaiting);
 				getIntegerParam(xpad_beam,&ival);
 				asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s%s:beam=%d\n ",driverName,functionName,ival);
