@@ -22,4 +22,4 @@ Additional information:
 
 
 @oirled @Mautly
-![ImXPAD logo](/xpadApp/op/adl/logo.gif)
+![ImXPAD logo](/xpadApp/op/opi/logo.png)
