@@ -14,7 +14,7 @@ driver for the detectors from
 Additional information:
 * [Documentation](http://80.15.49.71/epics/Xpad_areaDetector_Driver.html).
 * [Exemple: Get your first serie of images] (http://80.15.49.71/epics/SaveToTiff.html)
-* [Release notes and links to source and binary releases (will be active the day of first release)](#).
+* [Release notes and links to source and binary releases ](/RELEASE.md).
 
 
 
