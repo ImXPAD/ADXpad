@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>893</width>
+    <height>706</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="caWaterfallPlot" name="cawaterfallplot">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>421</width>
+      <height>341</height>
+     </rect>
+    </property>
+    <property name="Title" stdset="0">
+     <string notr="true">waveform</string>
+    </property>
+    <property name="TitleX">
+     <string notr="true">Bucket</string>
+    </property>
+    <property name="TitleY">
+     <string notr="true">Fill</string>
+    </property>
+    <property name="channel" stdset="0">
+     <string notr="true">$(P)$(R)ArrayData_RBV</string>
+    </property>
+    <property name="countNumOrChannel" stdset="0">
+     <string notr="true">2</string>
+    </property>
+    <property name="units">
+     <enum>caWaterfallPlot::Monitor</enum>
+    </property>
+    <property name="period">
+     <double>100.000000000000000</double>
+    </property>
+    <property name="NumberOfTraces" stdset="0">
+     <number>200</number>
+    </property>
+    <property name="IntensityMax">
+     <double>1000.000000000000000</double>
+    </property>
+    <property name="IntensityMin">
+     <double>0.000000000000000</double>
+    </property>
+    <property name="IntensityScalingMax">
+     <enum>caWaterfallPlot::User</enum>
+    </property>
+    <property name="IntensityScalingMin">
+     <enum>caWaterfallPlot::User</enum>
+    </property>
+    <property name="ColorMap" stdset="0">
+     <enum>caWaterfallPlot::spectrum_heat</enum>
+    </property>
+    <property name="grid">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="caCamera" name="cacamera">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>50</y>
+      <width>310</width>
+      <height>200</height>
+     </rect>
+    </property>
+    <property name="channelData" stdset="0">
+     <string notr="true">$(P)$(R)ArrayData_RBV</string>
+    </property>
+    <property name="channelWidth" stdset="0">
+     <string notr="true">$(P)$(R)ArraySizeX_RBV</string>
+    </property>
+    <property name="channelHeight" stdset="0">
+     <string notr="true">$(P)$(R)ArraySizeY_RBV</string>
+    </property>
+   </widget>
+   <widget class="caScan2D" name="cascan2d">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>370</y>
+      <width>310</width>
+      <height>200</height>
+     </rect>
+    </property>
+    <property name="channelData" stdset="0">
+     <string notr="true">$(P)$(R)ArrayData_RBV</string>
+    </property>
+    <property name="channelWidth" stdset="0">
+     <string notr="true">$(P)$(R)ArraySizeX_RBV</string>
+    </property>
+    <property name="channelHeight" stdset="0">
+     <string notr="true">$(P)$(R)ArraySizeX_RBV</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>893</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>caCamera</class>
+   <extends>QWidget</extends>
+   <header>caCamera</header>
+  </customwidget>
+  <customwidget>
+   <class>caWaterfallPlot</class>
+   <extends>QWidget</extends>
+   <header>caWaterfall</header>
+  </customwidget>
+  <customwidget>
+   <class>caScan2D</class>
+   <extends>QWidget</extends>
+   <header>caScan2D</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
