@@ -6,7 +6,7 @@ include "ADBase.template"
 include "NDFile.template"
 
 ####TO add a Qt viewer (caScan caCamera caWaterfall) you might need that
-#record(waveform, "$(P)$(R)ArrayData_RBV")
+#record(waveform, "$(P)$(R)XPAD:ArrayData_RBV")
 #{
     #field(DTYP, "asyn$(TYPE)ArrayIn")
     #field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STD_ARRAY_DATA")
@@ -14,7 +14,20 @@ include "NDFile.template"
     #field(NELM, "$(NELEMENTS)")
     #field(SCAN, "I/O Intr")
 #}
-
+#record(mbbi, "$(P)$(R)bpp")
+#{
+   #field(PINI, "YES")
+   #field(DTYP, "asynInt32")
+	#field(VAL,"1")
+	#field(SCAN, "I/O Intr")
+#}
+#record(mbbi, "$(P)$(R)code")
+#{
+   #field(PINI, "YES")
+   #field(DTYP, "asynInt32")
+	#field(VAL,"1")
+	#field(SCAN, "I/O Intr")
+#}
 ######################################
 #Filepaths and Filenames             #
 ######################################
@@ -422,7 +435,7 @@ record(busy, "$(P)$(R)ListWhiteImage") {
    field(DTYP, "asynInt32")
    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SHOW_WHITE")
    field(ZNAM, "Ok")
-   field(ONAM, "LIST OF WHITE IMAGES IN SERVER")
+   field(ONAM, "Listing")
    field(VAL,  "0")
 }
 record(busy, "$(P)$(R)LoadCalib") {
@@ -465,14 +478,14 @@ record(busy, "$(P)$(R)SendServer") {
    field(DTYP, "asynInt32")
    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_SEND_TOSERVER")
    field(ZNAM, "Ok")
-   field(ONAM, "Sending \"toServer\" to server")
+   field(ONAM, "Sending")
    field(VAL,  "0")
 }
 record(busy, "$(P)$(R)ReadServer") {
    field(DTYP, "asynInt32")
    field(OUT, "@asyn($(PORT),$(ADDR),$(TIMEOUT))XPAD_READ_FROMSERVER")
    field(ZNAM, "Ok")
-   field(ONAM, "Read server and save to fromServer")
+   field(ONAM, "Reading")
    field(VAL,  "0")
 }
 
@@ -559,16 +572,16 @@ record(mbbi, "$(P)$(R)DetectorState_RBV")
     field(ZRSV, "NO_ALARM")
     field(ONST, "Acquire")
     field(ONVL, "1")
-    field(ONSV, "NO_ALARM")
+    field(ONSV, "MINOR")
     field(TWST, "Readout")
     field(TWVL, "2")
-    field(TWSV, "NO_ALARM")
-    field(THST, "Correct")
+    field(TWSV, "MINOR")
+    field(THST, "Loading")
     field(THVL, "3")
-    field(THSV, "NO_ALARM")
+    field(THSV, "MINOR")
     field(FRST, "Saving")
     field(FRVL, "4")
-    field(FRSV, "NO_ALARM")
+    field(FRSV, "MINOR")
     field(FVST, "Aborting")
     field(FVVL, "5")
     field(FVSV, "MAJOR")
@@ -580,12 +593,12 @@ record(mbbi, "$(P)$(R)DetectorState_RBV")
     field(SVSV, "MINOR")
     field(EIST, "Initializing")
     field(EIVL, "8")
-    field(EISV, "NO_ALARM")
+    field(EISV, "MINOR")
     field(NIST, "Disconnected")
     field(NIVL, "9")
     field(NISV, "INVALID")
     field(TEST, "Aborted")
     field(TEVL, "10")
-    field(TESV, "MINOR")
+    field(TESV, "NO_ALARM")
     field(SCAN, "I/O Intr")
 }

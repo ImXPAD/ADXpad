@@ -562,6 +562,9 @@ border-radius: 2px;
       <height>20</height>
      </rect>
     </property>
+    <property name="label">
+     <string notr="true">-</string>
+    </property>
     <property name="foreground">
      <color>
       <red>218</red>
@@ -1656,6 +1659,9 @@ border-radius: 2px;
       <height>20</height>
      </rect>
     </property>
+    <property name="label">
+     <string notr="true">-</string>
+    </property>
     <property name="foreground">
      <color>
       <red>218</red>
@@ -1694,6 +1700,9 @@ border-radius: 2px;
       <width>64</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="label">
+     <string notr="true">-</string>
     </property>
     <property name="foreground">
      <color>
@@ -1734,6 +1743,9 @@ border-radius: 2px;
       <height>20</height>
      </rect>
     </property>
+    <property name="label">
+     <string notr="true">-</string>
+    </property>
     <property name="foreground">
      <color>
       <red>218</red>
@@ -1772,6 +1784,9 @@ border-radius: 2px;
       <width>64</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="label">
+     <string notr="true">-</string>
     </property>
     <property name="foreground">
      <color>
@@ -4651,7 +4666,7 @@ border-radius: 2px;
      </rect>
     </property>
     <property name="label">
-     <string>Calibration</string>
+     <string notr="true">-Calibration</string>
     </property>
     <property name="foreground">
      <color>
@@ -4717,6 +4732,91 @@ border-radius: 2px;
       <green>174</green>
       <blue>174</blue>
      </color>
+    </property>
+   </widget>
+   <widget class="caRelatedDisplay" name="caRelatedDisplay_8">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>420</y>
+      <width>75</width>
+      <height>15</height>
+     </rect>
+    </property>
+    <property name="label">
+     <string notr="true">Viewer</string>
+    </property>
+    <property name="foreground">
+     <color>
+      <red>255</red>
+      <green>255</green>
+      <blue>255</blue>
+     </color>
+    </property>
+    <property name="background">
+     <color>
+      <red>70</red>
+      <green>70</green>
+      <blue>70</blue>
+     </color>
+    </property>
+    <property name="labels">
+     <string notr="true">Image Viewer</string>
+    </property>
+    <property name="files">
+     <string notr="true">viewer.ui</string>
+    </property>
+    <property name="args">
+     <string>P=$(P),R=$(R)</string>
+    </property>
+    <property name="stackingMode" stdset="0">
+     <enum>caRowColMenu::Menu</enum>
+    </property>
+    <property name="removeParent" stdset="0">
+     <string>false</string>
+    </property>
+   </widget>
+   <widget class="caLed" name="caled">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>0</y>
+      <width>30</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="channel" stdset="0">
+     <string notr="true">$(P)$(R)DetectorState_RBV</string>
+    </property>
+    <property name="colorMode">
+     <enum>caLed::Alarm</enum>
+    </property>
+    <property name="falseColor">
+     <color>
+      <red>0</red>
+      <green>151</green>
+      <blue>101</blue>
+     </color>
+    </property>
+    <property name="trueColor">
+     <color>
+      <red>0</red>
+      <green>151</green>
+      <blue>101</blue>
+     </color>
+    </property>
+    <property name="undefinedColor">
+     <color>
+      <red>207</red>
+      <green>130</green>
+      <blue>5</blue>
+     </color>
+    </property>
+    <property name="trueValue">
+     <string notr="true">0</string>
+    </property>
+    <property name="falseValue">
+     <string>10</string>
     </property>
    </widget>
    <zorder>caRectangle_0</zorder>
@@ -4816,6 +4916,8 @@ border-radius: 2px;
    <zorder>caMessageButton_5</zorder>
    <zorder>caRelatedDisplay_6</zorder>
    <zorder>caRelatedDisplay_7</zorder>
+   <zorder>caRelatedDisplay_8</zorder>
+   <zorder>caled</zorder>
   </widget>
  </widget>
  <customwidgets>
@@ -4864,6 +4966,11 @@ border-radius: 2px;
    <class>caImage</class>
    <extends>QWidget</extends>
    <header>caImage</header>
+  </customwidget>
+  <customwidget>
+   <class>caLed</class>
+   <extends>QWidget</extends>
+   <header>caLed</header>
   </customwidget>
   <customwidget>
    <class>caLineEdit</class>

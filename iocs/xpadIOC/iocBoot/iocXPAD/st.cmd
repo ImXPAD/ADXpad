@@ -7,7 +7,7 @@ xpadApp_registerRecordDeviceDriver(pdbbase)
 # Prefix for all records
 epicsEnvSet("PREFIX", "13XPAD_1:")
 # The port name for the detector
-epicsEnvSet("PORT" ,   "XPAD")
+epicsEnvSet("PORT" ,  "XPAD")
 # The queue size for all plugins
 epicsEnvSet("QSIZE",  "20")
 # The maximim image width; used for row profiles in the NDPluginStats plugin
@@ -24,7 +24,7 @@ epicsEnvSet("EPICS_DB_INCLUDE_PATH", "$(ADCORE)/db")
 ###
 # Create the asyn port to talk to the XpadXXXServer on default port 3456
 
-drvAsynIPPortConfigure("XpadXXXServer","192.168.1.12:3456")
+drvAsynIPPortConfigure("XpadXXXServer","127.0.0.1:3456")
 # Set the input and output terminators.
 asynOctetSetInputEos("XpadXXXServer", 0, "\n")
 asynOctetSetOutputEos("XpadXXXServer", 0, "\n")
@@ -33,7 +33,7 @@ asynSetTraceIOMask("XpadXXXServer",0,2)
 
 
 
-drvAsynIPPortConfigure("XpadAbort","192.168.1.12:3456")
+drvAsynIPPortConfigure("XpadAbort","127.0.0.1:3456")
 asynOctetSetInputEos("XpadAbort", 1, "\n")
 asynOctetSetOutputEos("XpadAbort", 1, "\n")
 asynSetTraceIOMask("XpadAbort",1,2)
