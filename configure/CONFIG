@@ -1,5 +1,5 @@
 # CONFIG - Load build configuration data
-#
+
 # Do not make changes to this file!
 
 # Allow user to override where the build rules come from
