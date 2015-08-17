@@ -21,5 +21,5 @@ Additional information:
 
 
 
-@oirled @Mautly
+@oirled @Mautly for ImXPAD
 ![ImXPAD logo](/xpadApp/op/opi/logo.png)
