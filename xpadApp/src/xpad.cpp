@@ -1002,9 +1002,8 @@ void xpad::xpadTask(){
 
             case xmode_config:
             	status=xpadInit();	
-				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
+				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusWaiting);
 				else if(status==asynError || status==asynTimeout) setIntegerParam(ADStatus, ADStatusError);
-            	setIntegerParam(ADStatus,ADStatusWaiting);
 				getIntegerParam(xpad_beam,&ival);
 				asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER,  "%s%s:beam=%d\n ",driverName,functionName,ival);
 				getIntegerParam(xpad_speed,&ival3);
@@ -1038,9 +1037,11 @@ void xpad::xpadTask(){
             case xmode_calib:
 				status=xpadInit();
 				if(status==asynError|| status==asynTimeout)break;
+				setIntegerParam(ADStatus, 3);
 				getStringParam(xpad_filepath,MAX_FILENAME_LEN,strval);
 				status=this->loadConfigFromFile(strval);
-				epicsEventWaitWithTimeout(abortEventId,10);
+				epicsEventWaitWithTimeout(abortEventId,12);
+	pasynOctetSyncIO->flush(pasynUserServer);
 
 				if(status==asynSuccess) setIntegerParam(ADStatus,xpadStatusIdle);
 				else  setIntegerParam(ADStatus, ADStatusError);
@@ -1110,34 +1111,33 @@ void xpad::xpadTask(){
 void xpad::xpadAbortTask(){
 	size_t nWrite_,nRead_;
 	int eomReason;
+    pasynOctetSyncIO->connect("XpadAbort", 1, &this->pasynAbortServer, NULL);
 
 	while(1){
-//unlock();
         epicsEventWait(this->abortEventId);
-
         //mainTask.epicsThreadSuspendSelf();
-        pasynOctetSyncIO->connect("XpadAbort", 1, &this->pasynAbortServer, NULL);
-
 		asynPrint(this->pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER|ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER|ASYN_TRACEIO_DEVICE|ASYN_TRACEIO_FILTER|ASYN_TRACEIO_DRIVER ,  "\n\n%s: ABORTER THREAD HAS AWOKEN \n\n\n ",driverName);
 		epicsSnprintf(this->toServer, sizeof(this->toServer),"AbortCurrentProcess");
-
+//unlock();
 		pasynOctetSyncIO->write(pasynAbortServer, toServer, sizeof(toServer),XPAD_COMMAND_TIMEOUT,&nWrite_);
 
 		nRead_=2;
 		if(this->mode!=xmode_aquire && mode!=xmode_white && mode!=xmode_scalib){
 			while(nRead_>3){
-				pasynOctetSyncIO->read(pasynUserServer,fromServer, sizeof(fromServer),XPAD_SUPP_DELAY, &nRead_, &eomReason);
-				setStringParam(ADStringFromServer, fromServer);
+				pasynOctetSyncIO->read(pasynUserServer,serverPort, sizeof(serverPort),XPAD_SUPP_DELAY, &nRead_, &eomReason);
+				pasynOctetSyncIO->flush(pasynUserServer);
+				setStringParam(ADStringFromServer, serverPort);
 				callParamCallbacks();
 			}
 		}
+//lock();
 		setIntegerParam(ADAcquire,0);
-		pasynOctetSyncIO->flush(this->pasynUserServer);
-		pasynOctetSyncIO->disconnect(pasynAbortServer);
 		setIntegerParam(ADStatus,ADStatusAborted);
 		callParamCallbacks();
-//lock();
+
 	}
+			pasynOctetSyncIO->disconnect(pasynAbortServer);
+
 }
 ///Does not only write, called when a parameter is written, this performs associated actions
 /** Called when asyn clients call pasynInt32->write().
@@ -1192,7 +1192,6 @@ asynStatus xpad::writeInt32(asynUser *pasynUser, epicsInt32 value)
 		
     }else if (function == xpad_load_calib) {
 		this->mode=xmode_calib;
-		setIntegerParam(ADStatus, 3);
 		callParamCallbacks();
 		epicsEventSignal(startEventId);
 	}else if (function == xpad_save_calib) {

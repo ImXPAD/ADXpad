@@ -214,16 +214,16 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>89</red>
-      <green>126</green>
-      <blue>225</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="background">
-     <color alpha="0">
-      <red>89</red>
-      <green>126</green>
-      <blue>225</blue>
+     <color>
+      <red>70</red>
+      <green>70</green>
+      <blue>70</blue>
      </color>
     </property>
    </widget>
@@ -250,16 +250,16 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>89</red>
-      <green>126</green>
-      <blue>225</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="background">
-     <color alpha="0">
-      <red>89</red>
-      <green>126</green>
-      <blue>225</blue>
+     <color>
+      <red>70</red>
+      <green>70</green>
+      <blue>70</blue>
      </color>
     </property>
    </widget>
@@ -797,9 +797,9 @@ border-radius: 2px;
      </property>
      <property name="foreground">
       <color>
-       <red>89</red>
-       <green>126</green>
-       <blue>225</blue>
+       <red>0</red>
+       <green>150</green>
+       <blue>143</blue>
       </color>
      </property>
      <property name="background">
@@ -1267,9 +1267,9 @@ border-radius: 2px;
     </property>
     <property name="background">
      <color>
-      <red>75</red>
-      <green>110</green>
-      <blue>199</blue>
+      <red>106</red>
+      <green>106</green>
+      <blue>106</blue>
      </color>
     </property>
    </widget>
@@ -1705,9 +1705,9 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>39</red>
-      <green>84</green>
-      <blue>141</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="linestyle" stdset="0">
@@ -1715,9 +1715,9 @@ border-radius: 2px;
     </property>
     <property name="lineColor">
      <color>
-      <red>39</red>
-      <green>84</green>
-      <blue>141</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="colorMode">

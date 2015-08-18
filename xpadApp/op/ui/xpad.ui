@@ -127,9 +127,9 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>39</red>
-      <green>84</green>
-      <blue>141</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="linestyle" stdset="0">
@@ -137,9 +137,9 @@ border-radius: 2px;
     </property>
     <property name="lineColor">
      <color>
-      <red>39</red>
-      <green>84</green>
-      <blue>141</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="form">
@@ -819,9 +819,9 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>30</red>
-      <green>187</green>
-      <blue>0</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="background">
@@ -1419,7 +1419,7 @@ border-radius: 2px;
      </color>
     </property>
     <property name="colorMode">
-     <enum>caLineEdit::Alarm_Static</enum>
+     <enum>caLineEdit::Static</enum>
     </property>
     <property name="precisionMode">
      <enum>caLineEdit::Channel</enum>
@@ -3898,9 +3898,9 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>89</red>
-      <green>126</green>
-      <blue>225</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="background">
@@ -4128,9 +4128,9 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>255</red>
-      <green>255</green>
-      <blue>255</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="background">
@@ -4498,9 +4498,9 @@ border-radius: 2px;
     </property>
     <property name="foreground">
      <color>
-      <red>89</red>
-      <green>126</green>
-      <blue>225</blue>
+      <red>0</red>
+      <green>150</green>
+      <blue>143</blue>
      </color>
     </property>
     <property name="background">
