@@ -8,7 +8,7 @@ driver for the detectors from
 
 :white_check_mark: STATE : stable.
 
-###WARNING: Xpad Server v3.0.0 is required
+###WARNING: Xpad Server v3.X.X is required
 
 
 Additional information:
