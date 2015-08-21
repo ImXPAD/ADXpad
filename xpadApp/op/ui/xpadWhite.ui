@@ -297,6 +297,9 @@ border-radius: 2px;
     </property>
    </widget>
    <widget class="caLineEdit" name="caLineEdit_1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>13</x>

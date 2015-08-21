@@ -6,26 +6,32 @@ include "ADBase.template"
 include "NDFile.template"
 
 ####TO add a Qt viewer (caScan caCamera caWaterfall) you might need that
-#record(waveform, "$(P)$(R)XPAD:ArrayData_RBV")
+#record(waveform, "$(P)$(R)ArrayData_RBV")
 #{
-    #field(DTYP, "asyn$(TYPE)ArrayIn")
-    #field(OUT,  "@asyn($(PORT),$(ADDR),$(TIMEOUT))STD_ARRAY_DATA")
+    #field(DTYP, "asyn$(TYPE)ArrayOut")
+    #field(OUT,  "$(P)$(R)ArrayData")
     #field(FTVL, "$(FTVL)")
     #field(NELM, "$(NELEMENTS)")
     #field(SCAN, "I/O Intr")
-#}
-#record(mbbi, "$(P)$(R)bpp")
+##}
+
+#record(ai, "$(P)$(R)bpp")
 #{
    #field(PINI, "YES")
    #field(DTYP, "asynInt32")
-	#field(VAL,"1")
-	#field(SCAN, "I/O Intr")
+   #field(PREC, "0")
+   #field(VAL,  "4")
+   	#field(SCAN, "I/O Intr")
 #}
 #record(mbbi, "$(P)$(R)code")
 #{
    #field(PINI, "YES")
    #field(DTYP, "asynInt32")
 	#field(VAL,"1")
+	#field(ZRST, "code0")
+   #field(ZRVL, "0")
+   #field(ONST, "code1")
+   #field(ONVL, "1")
 	#field(SCAN, "I/O Intr")
 #}
 ######################################

@@ -50,7 +50,7 @@ asynStatus xpad::getImageStream()
     asynStatus status=asynSuccess;
     char *pOut=NULL;
     char *pIn;
-	size_t nRead_=0, nWrite_=0,dims[2];
+	size_t nRead_=0, nWrite_=0,dims[3];
     asynUser *pasynUser = this->pasynUserServer;
     
     pasynOctetSyncIO->read(pasynUser, fromServer, sizeof(fromServer),RETURNED_CHEVRON_ELIMINATION_TIME , &nRead_, &eomReason);/////////////////////////////////////////
@@ -122,6 +122,7 @@ lock();
 	dataLen=(uint8_t)fromServer[ival+3]<<24|(uint8_t)fromServer[ival+2]<<16|(uint8_t)fromServer[ival+1]<<8|(uint8_t)fromServer[ival+0];
 	dims[1]=(size_t)((uint8_t)fromServer[ival+7]<<24|(uint8_t)fromServer[ival+6]<<16|(uint8_t)fromServer[ival+5]<<8|(uint8_t)fromServer[ival+4]);
 	dims[0]=(size_t)((uint8_t)fromServer[ival+11]<<24|(uint8_t)fromServer[ival+10]<<16|(uint8_t)fromServer[ival+9]<<8|(uint8_t)fromServer[ival+8]);
+	dims[2]=1;
 	//dataLen=dims[0]*dims[1]*4;
 	asynPrint(pasynUserSelf, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s%s: Image dimensions  %d*%d \nimagesize:%d \n",driverName,functionName,(int)dims[0],(int)dims[1],dataLen);
 	if ((dims[0] <= 0) || (dims[1] <= 0)){	//||dataLen!=(int)(dims[0]*dims[1]*4)){
@@ -139,8 +140,9 @@ lock();
 	else{
 		setIntegerParam(NDArraySizeY,dims[1]);
 		setIntegerParam(NDArraySizeX, dims[0]);
+		setIntegerParam(NDArraySizeZ, dims[2]);
 		setIntegerParam(NDArraySize, dataLen);
-		pImage = this->pNDArrayPool->alloc(2, dims, NDInt32, 0, NULL);
+		pImage = this->pNDArrayPool->alloc(3, dims, NDInt32, 0, NULL);
 	}
 			
 
@@ -682,8 +684,10 @@ asynStatus xpad::xpadInit()
 		   setIntegerParam(ADStatus,ADStatusError);
 		   return (asynStatus)status;	    
 		}
+		setIntegerParam(NDArraySizeZ,(int) 1);
 	    asynPrint(pasynUserServer, ASYN_TRACE_FLOW | ASYN_TRACEIO_DRIVER, "%s:%s:XPad is initializing\n",driverName,functionName);
 	    status|= waitForCompletion("* 0",fromServer,XPAD_COMMAND_TIMEOUT);
+	    callParamCallbacks();
 	    if(status==asynError || status==asynTimeout) { 
 		   asynPrint(pasynUserServer, ASYN_TRACE_ERROR | ASYN_TRACEIO_DRIVER, "%s:%s: XpadXXXServer failed Init, Try again \n",driverName,functionName);
 		   ready=false;
@@ -1368,6 +1372,8 @@ xpad::xpad(const char *portName, const char *serverPort,int maxBuffers, size_t m
 	    /* Connect to server */
 	    status = pasynOctetSyncIO->connect(serverPort, 0, &this->pasynUserServer, NULL);
 	    setIntegerParam(ADMaxSizeX, 4200);
+		setIntegerParam(NDArraySizeZ,(int) 1);
+
 		setIntegerParam(ADMaxSizeY, 4200);
 	    /* Allocate the raw buffer we use to files.  Only do this once */    
 		status|=setIntegerParam(NDColorMode, NDColorModeMono);
@@ -1391,7 +1397,7 @@ xpad::xpad(const char *portName, const char *serverPort,int maxBuffers, size_t m
 	    status |= setIntegerParam(xpad_output,OS_exposure_busy);
 	    status |= setIntegerParam(xpad_outformat,1);//Binary
 	    status |= setStringParam(xpad_outpath,"/opt/imXPAD/tmp_corrected/");
-	    status |= setStringParam(xpad_filepath,"/EpicsOirledCalib.cfg");// 
+	    status |= setStringParam(xpad_filepath,"EpicsOirledCalib.cfg");// 
 	    status |= setStringParam(xpad_whitepath,"EpicsOirled.dat");
 		callParamCallbacks();
 	    /* Create the thread that collects the data */

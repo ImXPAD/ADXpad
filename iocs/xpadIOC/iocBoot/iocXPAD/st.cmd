@@ -5,7 +5,7 @@ dbLoadDatabase("$(TOP)/dbd/xpadApp.dbd")
 xpadApp_registerRecordDeviceDriver(pdbbase) 
 
 # Prefix for all records
-epicsEnvSet("PREFIX", "13XPAD_1:")
+epicsEnvSet("PREFIX", "13XPAD_2:")
 # The port name for the detector
 epicsEnvSet("PORT" ,  "XPAD")
 # The queue size for all plugins
@@ -54,7 +54,7 @@ dbLoadRecords("$(XPAD)/db/xpad.template","P=$(PREFIX),R=cam1:,PORT=$(PORT),ADDR=
 NDStdArraysConfigure("Image1",3, 0, "$(PORT)", 0)
 
 
-dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Int32,FTVL=LONG,NELEMENTS=2000000")
+dbLoadRecords("$(ADCORE)/db/NDStdArrays.template", "P=$(PREFIX),R=image1:,PORT=Image1,ADDR=0,TIMEOUT=1,NDARRAY_PORT=$(PORT),TYPE=Int32,FTVL=LONG,NELEMENTS=200000000")
 
 # Load all other plugins using commonPlugins.cmd
 < $(ADCORE)/iocBoot/commonPlugins.cmd

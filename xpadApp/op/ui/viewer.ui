@@ -10,6 +10,12 @@
     <height>613</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -435,11 +441,23 @@
       <x>0</x>
       <y>0</y>
       <width>801</width>
-      <height>581</height>
+      <height>571</height>
      </rect>
+    </property>
+    <property name="sizePolicy">
+     <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+      <horstretch>0</horstretch>
+      <verstretch>0</verstretch>
+     </sizepolicy>
     </property>
     <property name="cursor">
      <cursorShape>CrossCursor</cursorShape>
+    </property>
+    <property name="mouseTracking">
+     <bool>true</bool>
+    </property>
+    <property name="autoFillBackground">
+     <bool>true</bool>
     </property>
     <property name="channelData" stdset="0">
      <string notr="true">$(P)image1:ArrayData</string>
@@ -454,16 +472,19 @@
      <string notr="true">$(P)$(R)code</string>
     </property>
     <property name="channelBPP" stdset="0">
-     <string notr="true">$(P)$(R)bpp</string>
+     <string notr="true">$(P)$(R)DataType_RBV</string>
     </property>
     <property name="automaticLevels" stdset="0">
-     <bool>false</bool>
+     <bool>true</bool>
     </property>
     <property name="minLevel">
      <string notr="true">-1</string>
     </property>
     <property name="maxLevel">
      <string notr="true">5000</string>
+    </property>
+    <property name="ColorMap" stdset="0">
+     <enum>caCamera::grey</enum>
     </property>
    </widget>
   </widget>
